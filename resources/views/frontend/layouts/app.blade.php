@@ -20,6 +20,8 @@
 
         @yield('meta')
 
+    
+
         @if(!isset($detailedProduct) && !isset($customer_product) && !isset($shop) && !isset($page) && !isset($blog))
             <!-- Schema.org markup for Google+ -->
                 <meta itemprop="name" content="{{ get_setting('meta_title') }}">
@@ -168,7 +170,7 @@
             @endphp
 
         </head>
-        <body>
+        <body class="d-none" >
         <!-- aiz-main-wrapper -->
         <div class="aiz-main-wrapper d-flex flex-column">
 

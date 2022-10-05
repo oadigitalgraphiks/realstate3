@@ -21,7 +21,8 @@ class AgencySignupOptionController extends Controller
             $sort_search = $request->search;
             $agency_signup_options = $agency_signup_options->where('name', 'like', '%'.$sort_search.'%');
         }
-        $agency_signup_options = $agency_signup_options->paginate(15);
+        $agency_signup_options = $agency_signup_options->paginate(10);
+
         return view('backend.sellers.signup_options.index', compact('agency_signup_options', 'sort_search'));
     }
 
@@ -56,15 +57,7 @@ class AgencySignupOptionController extends Controller
         return redirect()->route('agency_signup_options.index');
     }
 
-    public function destroy($id)
-    {
-        $agency_signup_options = AgencySignupOption::findOrFail($id);
-        $agency_signup_options->delete();
-
-        flash(translate('Property Purpose has been deleted successfully'))->success();
-        return redirect()->route('agency_signup_options.index');
-
-    }
+   
 
     public function edit(Request $request, $id){
 
@@ -98,15 +91,19 @@ class AgencySignupOptionController extends Controller
         $agency_signup_option->save();
 
         flash(translate('Agent Signup Option has been updated successfully'))->success();
-        return redirect()->route('agency_signup_options.index');
+        return redirect()->back()->with('success','Updated');
     }
 
-    public function updateFeatured(Request $request)
+
+    public function destroy($id)
     {
-        $agency_signup_option = AgencySignupOption::findOrFail($request->id);
-        $agency_signup_option->featured = $request->status;
-        $agency_signup_option->save();
-        Cache::forget('featured_product_purposes');
-        return 1;
+        $agency_signup_options = AgencySignupOption::findOrFail($id);
+        $agency_signup_options->delete();
+
+        flash(translate('Property Purpose has been deleted successfully'))->success();
+        return redirect()->route('agency_signup_options.index');
+
     }
+
+   
 }

@@ -1,305 +1,286 @@
 @extends('backend.layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{asset('/public/assets/backend/css/confirm.css')}}">
+@endSection
+
 @section('content')
 
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         <div class="toolbar" id="kt_toolbar">
             <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-                <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
-                    data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
-                    class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">Property inquiries</h1>
-                    <span class="h-20px border-gray-300 border-start mx-4"></span>
-
+                <div class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ translate('Property Inquiries') }} </h1><span class="h-20px border-gray-300 border-start mx-4"></span>
                     <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-muted">
-                            <a href="#" class="text-muted text-hover-primary">Home</a>
+                            <a href="{{ route("admin.dashboard")}}" class="text-muted text-hover-primary"> {{ translate('home') }}</a>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Products</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted">
+                         <a href="{{route('sellers.index')}}">{{ translate('agencies') }}</a>
+                        </li>
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Property inquiries</li>
-                        <!--end::Item-->
+                        <li class="breadcrumb-item text-muted"> <a href="{{route('property_inquiries.index')}}">{{translate('inquiries') }}</a></li>
                     </ul>
-                    <!--end::Breadcrumb-->
                 </div>
-                <!--end::Page title-->
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Toolbar-->
-        <!--begin::Post-->
+   
         <div class="post d-flex flex-column-fluid" id="kt_post">
-            <!--begin::Container-->
             <div id="kt_content_container" class="container-xxl">
-                <!--begin::Products-->
-                <form class="" id="sort_property_type" action="" method="GET">
-                    <div class="card card-flush">
-                        <!--begin::Card header-->
-                        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
-                            <!--begin::Card title-->
-                            <div class="card-title">
-                                <!--begin::Search-->
-                                <div class="d-flex align-items-center position-relative my-1">
-                                    <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
-                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none">
-                                            <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1"
-                                                transform="rotate(45 17.0365 15.1223)" fill="black" />
-                                            <path
-                                                d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                fill="black" />
-                                        </svg>
-                                    </span>
-                                    <!--end::Svg Icon-->
-                                    <input type="text" class="form-control form-control-solid w-250px ps-14" id="search"
-                                        name="search" @isset($sort_search) value="{{ $sort_search }}"
-                                        @endisset placeholder="{{ translate('Type & Enter') }}" />
-                                </div>
-                                <!--end::Search-->
 
+                <div class="card card-flush mb-5">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <h2>{{ translate('Filters') }}</h2>
                             </div>
-                            <!--end::Card title-->
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-
-                        <div class="card-body pt-0">
-                            <!--begin::Table-->
-                            <div class="table-responsive">
-                                <!--begin::Table-->
-                                <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
-                                    <!--begin::Table head-->
-                                    <thead>
-                                        <!--begin::Table row-->
-                                        <tr class="text-center text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                            <th class="w-10px pe-2">
-                                                {{ translate('Sno.') }}
-                                            </th>
-                                            <th class="min-w-200px">{{ translate('Name') }}</th>
-                                            <th class="text-center min-w-75px">{{ translate('Agency') }}</th>
-                                            <th class="text-center min-w-175px">{{ translate('Property') }}</th>
-                                            <th class="text-center min-w-150px">{{ translate('Email') }}</th>
-                                            <th class="text-center min-w-150px">{{ translate('Actions') }}</th>
-                                        </tr>
-                                        <!--end::Table row-->
-                                    </thead>
-                                    <!--end::Table head-->
-                                    <!--begin::Table body-->
-                                    <tbody class="fw-bold text-gray-600">
-                                        <!--begin::Table row-->
-                                        @foreach ($property_inquiries as $key => $property_inquiry)
-                                        
-                                            <tr>
-                                                <!--begin::Checkbox-->
-                                                <td class="text-center pe-0">
-                                                    <span
-                                                        class="fw-bolder">{{$property_inquiry->id}}</span>
-                                                </td>
-                                                <!--begin::Category=-->
-                                                <td>
-                                                    <div class="d-flex" style="justify-content: center">
-                                                        <!--begin::Thumbnail-->
-                                                        <a href="{{ route('property_inquiries.edit', ['id' => $property_inquiry->id, 'lang' => env('DEFAULT_LANGUAGE')]) }}"
-                                                            class="symbol symbol-50px">
-                                                        </a>
-                                                        <!--end::Thumbnail-->
-                                                        <div class="ms-5">
-                                                            <!--begin::Title-->
-                                                            <a href="#" onclick="function show_modal(){
-                                                                $('#details{{$property_inquiry->id}}').modal('show', {
-                                                                    backdrop: 'static'
-                                                                });
-                                                                
-                                                            }
-                                                            show_modal()"
-                                                                class="text-gray-800 text-hover-primary fs-5 fw-bolder mb-1"
-                                                                data-kt-ecommerce-property_type-filter="property_type_name">
-                                                                <div class="badge badge-light-success">
-                                                                    {{ $property_inquiry->getTranslation('name') }}</div>
-                                                            </a>
-                                                            <!--end::Title-->
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <!--end::Category=-->
-                                                <td class="text-center pe-0">
-                                                    <span class="fw-bolder">
-                                                        @if (isset($property_inquiry->agent->shop->name))
-                                                            {{ $property_inquiry->agent->shop->name }}
-                                                        @else
-                                                            —
-                                                        @endif
-                                                    </span>
-                                                </td>
-                                                <!--end::SKU=-->
-                                                <!--begin::Qty=-->
-                                                <td class="text-center pe-0" data-order="32">
-                                                    <a href="{{ route('product', $property_inquiry->property->slug) }}" class="fw-bolder">
-                                                        @if ($property_inquiry->property->name != null)
-                                                            {{ $property_inquiry->property->name }}
-                                                        @else
-                                                            —
-                                                        @endif
-                                                    </a>
-                                                </td>
-                                                <td class="text-center pe-0" data-order="32">
-                                                    <span class="fw-bolder ms-3">
-                                                        {{ $property_inquiry->email }}
-                                                    </span>
-                                                </td>
-                                                <!--end::Price=-->
-                                                <!--end::Rating-->
-
-                                                <td class="text-center">
-                                                    <a href="#" onclick="function show_modal(){
-                                                        $('#details{{$property_inquiry->id}}').modal('show', {
-                                                            backdrop: 'static'
-                                                        });
-                                                        
-                                                    }
-                                                    show_modal()"
-                                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                                                        <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-                                                        <span class="svg-icon svg-icon-3">
-                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                                                                height="24px" viewBox="0 0 24 24" version="1.1">
-                                                                <g stroke="none" stroke-width="1" fill="none"
-                                                                    fill-rule="evenodd">
-                                                                    <rect x="0" y="0" width="24" height="24" />
-                                                                    <path
-                                                                        d="M3,12 C3,12 5.45454545,6 12,6 C16.9090909,6 21,12 21,12 C21,12 16.9090909,18 12,18 C5.45454545,18 3,12 3,12 Z"
-                                                                        fill="#000000" fill-rule="nonzero" opacity="0.3" />
-                                                                    <path
-                                                                        d="M12,15 C10.3431458,15 9,13.6568542 9,12 C9,10.3431458 10.3431458,9 12,9 C13.6568542,9 15,10.3431458 15,12 C15,13.6568542 13.6568542,15 12,15 Z"
-                                                                        fill="#000000" opacity="0.3" />
-                                                                </g>
-                                                            </svg></span>
-                                                    </a>
-
-                                                    <a href="#"
-                                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm confirm-delete"
-                                                        data-href="{{ route('property_inquiries.destroy', $property_inquiry->id) }}">
-                                                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                                                        <span class="svg-icon svg-icon-3">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                viewBox="0 0 24 24" fill="none">
-                                                                <path
-                                                                    d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z"
-                                                                    fill="black"></path>
-                                                                <path opacity="0.5"
-                                                                    d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z"
-                                                                    fill="black"></path>
-                                                                <path opacity="0.5"
-                                                                    d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z"
-                                                                    fill="black"></path>
-                                                            </svg>
-                                                        </span>
-                                                        <!--end::Svg Icon-->
-                                                    </a>
-
-                                                </td>
-
-                                                <!--end::Action=-->
-                                            </tr>
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="details{{$property_inquiry->id}}" tabindex="-1" aria-labelledby="details{{$property_inquiry->id}}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h4 class="modal-title h6">{{translate('Delete Confirmation')}}</h4>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p class="mt-1"><strong>Name:</strong> {{$property_inquiry->name}}</p>
-                                                            <p class="mt-1"><strong>Agency:</strong>  @if (isset($property_inquiry->agent->shop->name))
-                                                                {{ $property_inquiry->agent->shop->name }}
-                                                            @else
-                                                                —
-                                                            @endif</p>
-                                                            <p class="mt-1"><strong>Property:</strong> {{$property_inquiry->property->name}}</p>
-                                                            <p class="mt-1"><strong>Email:</strong> {{$property_inquiry->email}}</p>
-                                                            <p class="mt-1"><strong>Phone:</strong> {{$property_inquiry->phone}}</p>
-                                                            <p class="mt-1"><strong>Message:</strong> {{$property_inquiry->message}}</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">{{ translate('Cancel') }}</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- /.modal -->
-                                        @endforeach
-                                        <!--end::Table row-->
-                                    </tbody>
-                                    <!--end::Table body-->
-                                </table>
-                                <!--end::Table-->
-                            </div>
-                            <!--end::Card body-->
                         </div>
                     </div>
-                </form>
-                <!--end::Products-->
+                     <div class="card-body pt-0">
+                        <form>
+                                <div class="row align-items-center">
+                                       
+                                        <div class="col-md-3">
+                                            <label class="pb-2 mr-3 mb-0 d-none d-md-block">{{ translate('Customer') }}:</label>
+                                            <select name="customer" class="form-select mb-2" data-control="select2" data-placeholder="Select an option" data-allow-clear="true"  class="form-control">
+                                                <option value=""> {{ translate('All') }}</option>
+                                                @foreach ($customers as $item)
+                                                <option {{request()->has('customer') && request()->customer == $item->id ? 'selected' : '' }} value="{{$item->id}}">{{$item->name}}</option>    
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="pb-2 mr-3 mb-0 d-none d-md-block">{{ translate('Property') }}:</label>
+                                            <select name="property" class="form-select mb-2" data-control="select2" data-placeholder="Select an option" data-allow-clear="true"  class="form-control">
+                                                <option value=""> {{ translate('All') }}</option>
+                                                @foreach ($properties as $item)
+                                                <option {{request()->has('property') && request()->property == $item->id ? 'selected' : '' }} value="{{$item->id}}">({{$item->ref}}) - {{$item->name}}</option>    
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="pb-2 mr-3 mb-0 d-none d-md-block"> {{ translate('Agent') }} :</label>
+                                            <select class="form-select mb-2" data-control="select2" data-allow-clear="true"   data-placeholder="Select an option"  name="agent"  class="form-control">
+                                                <option value=""> {{translate('All')}}</option>
+                                               @foreach ($agents as $item)
+                                                <option {{request()->has('agent') && request()->agent == $item->id ? 'selected' : '' }} value="{{$item->id}}">{{$item->shop->name}}</option>
+                                               @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2 align-self-end ">
+                                            <button type="submit" class="block btn btn-primary px-6 font-weight-bold">Search</button>
+                                        </div>
+                                  </div>
+                            </form>
+                        </div>
+                    </div>
+                
+                    <div class="card card-flush">
+                        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                            <div class="card-title">
+                                <div class="d-flex align-items-center position-relative my-1">
+                                    <h2>{{ translate('All Inquiries') }}</h2>
+                                </div>
+                            </div>
+                            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                
+                                <span class="text-muted"> {{ translate('Displaying') }}  
+                                    {{ ($data->currentPage() > 1) ? (($data->currentPage()-1) * $data->perPage()) : ((count($data) > 0) ? 1 : 0) }} -
+                                        
+                                    {{ ($data->currentPage() > 1) ? (($data->currentPage()-1) * $data->perPage() + count($data)) : count($data)}} {{ translate('of') }} <span class="count_show"> {{$data->total()}} </span> 
+                                    {{ translate('Records') }}</span>
+    
+                                    <div class="mx-1 dropdown">
+                                        <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i></button>
+                                        <div class="dropdown-menu actions" aria-labelledby="dropdownMenuButton" style="">
+                                          <button data-action="delete" data-value="1" type="button" class="dropdown-item action_button "> Delete</button>
+
+                                        </div>
+                                    </div>
+                             </div>
+                        </div>
+                     
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
+                                    <thead>
+                                        <tr class="text-center fw-bolder fs-7 text-uppercase gs-0">
+                                            <th>
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3"> <input class="bulk_check form-check-input" type="checkbox" />
+                                                </div> 
+                                            </th>
+                                            <th class="w-10px pe-2"># </th>
+                                            <th class="min-w-200px">{{ translate('Name') }}</th>
+                                            <th class="min-w-200px">{{ translate('Email') }}</th>
+                                            <th class="text-center min-w-175px">{{ translate('Property') }}</th>
+                                            <th class="text-center min-w-75px">{{translate('Agent')}}/{{translate('Agency')}}</th>
+                                            <th class="text-center min-w-150px">{{ translate('Date') }}</th>
+                                            <th class="text-center min-w-150px">{{ translate('Actions') }}</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="fw-bold text-gray-600">
+                                        @foreach ($data as $key => $item)
+                                            <tr>
+                                                <td> 
+                                                    <div class="row_selected_checkbox form-check form-check-sm form-check-custom form-check-solid">
+                                                    <input class=" form-check-input" type="checkbox" value="{{$item->id}}"/>
+                                                 </div>
+                                                </td>
+                                                <td class="text-center ">
+                                                    <span class="fw-bolder">{{$item->id}}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if($item->user)
+                                                       <a href="{{route('customers.show',$item->user->id)}}">
+                                                         {{$item->user->name}}
+                                                       </a>
+                                                      @else
+                                                        {{$item->name}}
+                                                    @endif
+                                                </td>
+                                                <td> {{$item->email}}</td>
+                                                <td class="text-center">
+                                                    <a href="{{ route('products.admin.edit', $item->property_id) }}" class="fw-bolder">
+                                                        @if($item->property->name != null)
+                                                        ({{$item->property->ref }}) - {{ $item->property->name }}
+                                                        @else  —  @endif </a>
+                                                </td>
+                                                <td class="text-center pe-0">
+                                                    <span class="fw-bolder">
+                                                        @if (isset($item->property->user->shop->name))
+                                                        <a href="{{route('sellers.show',$item->property->user->id)}}" >{{ $item->property->user->shop->name }}</a>    
+                                                        
+                                                        @else —  @endif
+                                                    </span>
+                                                </td>
+                                                <td> {{$item->created_at}}</td>
+                                                <td class="text-center">
+                                                    <div class="dropdown dropdown-inline mr-4">
+                                                        <button type="button" class="btn  btn-light-primary btn-icon btn-sm"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                            <span class="svg-icon svg-icon-primary svg-icon-2x">
+                                                                 <i class="fas fa-ellipsis-v" ></i>
+                                                            </span>
+                                                        </button>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item" href="{{route('property_inquiries.edit',$item->id)}}">{{ translate('View')}}</a>
+                                                            <a href="javascript:void(0)" class="onDelete dropdown-item" data-id="{{$item->id}}">{{ translate('Delete')}} </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="aiz-pagination">
+                                {{ $data->appends(request()->input())->links() }}
+                            </div>
+                        </div>
+                    </div>
+            
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Post-->
     </div>
-    <!--end::Content-->
-
-
-@endsection
-
-
-@section('modal')
-    @include('modals.delete_modal')
 @endsection
 
 
 @section('script')
+
+    <script src="{{asset('/public/assets/backend/js/confirm.js')}}"></script>
     <script type="text/javascript">
-        function update_featured(el) {
-            if (el.checked) {
-                var status = 1;
-            } else {
-                var status = 0;
+
+        $('.bulk_check').change(function(){
+            if($(this).prop("checked") == true){
+                $('.row_selected_checkbox .form-check-input').prop("checked", true);
+            }else if($(this).prop("checked") == false){
+                $('.row_selected_checkbox .form-check-input').prop("checked", false);
             }
-            $.post('{{ route('property_type.featured') }}', {
-                _token: '{{ csrf_token() }}',
-                id: el.value,
-                status: status
-            }, function(data) {
-                if (data == 1) {
-                    AIZ.plugins.notify('success', '{{ translate('Featured property_type updated successfully') }}');
-                } else {
-                    AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+        });
+
+
+        $('.actions button').click(function(){
+
+            let action = $(this).attr("data-action"); 
+            let value = $(this).attr("data-value"); 
+            let idz = [];
+
+            $('.row_selected_checkbox .form-check-input:checked').each(function() {
+                idz.push($(this).val());
+            });
+
+            if(idz.length == 0){
+                alert('Please Select Record');
+                return false;
+            }
+
+            $.confirm({
+            closeIcon: true, 
+            title: false,
+            content:'Are you sure to continue ?',
+            buttons: { 
+                    Ok:function(){
+                        $.get("{{route('property_inquiries.bulk')}}",
+                        { 
+                            idz:idz.toString(),
+                            action:action,
+                            value:value
+                        }, function(data, status){
+                            AIZ.plugins.notify('success','Success');
+                            location.reload();
+                        });
+                    },
+                    Cancel: {
+                        action: function () {
+                        }
+                    }
                 }
             });
 
-            function show_modal(url) {
-            $('#details'+url).modal('show', {
-                backdrop: 'static'
-            });
-            document.getElementById('confirmationunban').setAttribute('href', url);
-        }
-        }
+        });
+
+
+        $("table").delegate(".onDelete", "click", function(){
+
+            let id = $(this).attr("data-id"); 
+
+            $.confirm({
+                closeIcon: true, 
+                title: false,
+                content:'Are you sure to continue ?',
+                buttons: { 
+                        Ok:function(){
+                                $.get("{{route('property_inquiries.bulk')}}",
+                                    { 
+                                        idz:id,
+                                        action:'delete',
+                                        value:0
+                                    }, function(data, status){                   
+                                        AIZ.plugins.notify('success','Record Deleted');
+                                        location.reload();
+                                });
+                        },
+                        Cancel: {
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+
+
+        });    
     </script>
 @endsection

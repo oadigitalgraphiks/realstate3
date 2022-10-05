@@ -111,6 +111,8 @@ class SellerController extends Controller
     public function show($id)
     {
         //
+        $data = User::find($id);
+        return view('backend.sellers.view',compact('data'));
     }
 
     /**
@@ -124,12 +126,10 @@ class SellerController extends Controller
         $seller = Seller::findOrFail(decrypt($id));
         return view('backend.sellers.edit', compact('seller'));
     }
+    
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -264,22 +264,7 @@ class SellerController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function ban($id)
-    {
-        $seller = Seller::findOrFail($id);
-
-        if ($seller->user->banned == 1) {
-            $seller->user->banned = 0;
-            flash(translate('Seller has been unbanned successfully'))->success();
-        } else {
-            $seller->user->banned = 1;
-            flash(translate('Seller has been banned successfully'))->success();
-        }
-
-        $seller->user->save();
-        return back();
-    }
-
+  
 
       /*
      * Remove the specified resource from storage.
@@ -288,10 +273,8 @@ class SellerController extends Controller
     {
 
         if($request->has('idz') && $request->has('action') && $request->has('value')){
-
             $idz = explode(',',$request->idz);    
             switch ($request->action) {
-                
                 case 'delete':
 
                     // User::whereIn('_id',$idz)->delete();

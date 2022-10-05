@@ -5,89 +5,97 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PropertyAmenity;
 use App\Models\PropertyAmenityTranslation;
-use Illuminate\Support\Str;
 
 class PropertyAmenityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
+
+    /*
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
         $sort_search =null;
-        $property_amenities = PropertyAmenity::orderBy('id', 'desc');
+        $data = PropertyAmenity::orderBy('id', 'desc');
         if ($request->has('search')){
             $sort_search = $request->search;
-            $property_amenities = $property_amenities->where('name', 'like', '%'.$sort_search.'%');
+            $data = $data->where('name', 'like', '%'.$sort_search.'%');
         }
-        $property_amenities = $property_amenities->paginate(15);
-        return view('backend.product.property_amenities.index', compact('property_amenities', 'sort_search'));
+
+        $data = $data->paginate(10);
+        return view('backend.product.property_amenities.index', compact('data', 'sort_search'));
     }
+
 
     public function create()
     {
-        $property_amenities = PropertyAmenity::all();
-
-        return view('backend.product.property_amenities.create', compact('property_amenities'));
+        return view('backend.product.property_amenities.create');
     }
 
     public function store(Request $request)
     {
-        $property_amenity = new PropertyAmenity;
-        $property_amenity->name = $request->name;
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_amenities,slug',
+        ]);
 
-        $property_amenity->save();
+        $data = new PropertyAmenity;
+        $data->name = $request->name;
+        $data->slug = $request->slug;
+        $data->logo = $request->logo;
+        $data->save();
 
-        $property_amenity_translation = PropertyAmenityTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'property_amenity_id' => $property_amenity->id]);
-        $property_amenity_translation->name = $request->name;
-        $property_amenity_translation->save();
+        $translation = PropertyAmenityTranslation::firstOrNew([
+            'lang' => env('DEFAULT_LANGUAGE'), 
+            'property_amenity_id' => $data->id
+        ]);
 
-        flash(translate('Property Amenity has been inserted successfully'))->success();
+        $translation->name = $request->name;
+        $translation->save();
+
+        flash(translate('Property Aminty has been inserted successfully'))->success();
         return redirect()->route('property_amenities.index');
+    }
+
+   
+    public function edit(Request $request, $id){
+
+        $lang = $request->lang;
+        $data = PropertyAmenity::findOrFail($id);
+        return view('backend.product.property_amenities.edit', compact('lang', 'data'));
+    }
+
+
+    public function update(Request $request, $id){
+
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_amenities,slug,'.$id,
+        ]);
+
+        $data = PropertyAmenity::findOrFail($id);
+        if($request->lang == env("DEFAULT_LANGUAGE")){
+            $data->name = $request->name;
+            $data->logo = $request->logo;
+        }
+        
+        $data->slug = $request->slug;
+        $data->save();
+
+        $translation = PropertyAmenityTranslation::firstOrNew(['lang' => $request->lang, 'property_amenity_id' => $data->id]);
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
+
+        flash(translate('Property Amenity has been updated successfully'))->success();
+        return back();
     }
 
     public function destroy($id)
     {
-        $property_amenities = PropertyAmenity::findOrFail($id);
-
-        $property_amenities->delete();
-
-        flash(translate('Property Amenity has been deleted successfully'))->success();
-        return redirect()->route('property_amenities.index');
+        $data = PropertyAmenity::findOrFail($id);
+        $data->delete();
+        flash(translate('Property Tour Type has been deleted successfully'))->success();
+        return back();
     }
 
-    public function edit(Request $request, $id){
-
-        $lang = $request->lang;
-        $property_amenity = PropertyAmenity::findOrFail($id);
-        return view('backend.product.property_amenities.edit', compact('lang', 'property_amenity'));
-    }
-
-    public function update(Request $request, $id){
-        $property_amenity = PropertyAmenity::findOrFail($id);
-        if($request->lang == env("DEFAULT_LANGUAGE")){
-            $property_amenity->name = $request->name;
-        }
-
-        $property_amenity->save();
-
-
-        $property_amenity_translation = PropertyAmenityTranslation::firstOrNew(['lang' => $request->lang, 'property_amenity_id' => $property_amenity->id]);
-        $property_amenity_translation->name = $request->name;
-        $property_amenity_translation->save();
-
-        flash(translate('Property Type has been updated successfully'))->success();
-        return redirect()->route('property_amenities.index');
-    }
-
-    public function updateFeatured(Request $request)
-    {
-        $property_amenity = PropertyAmenity::findOrFail($request->id);
-        $property_amenity->featured = $request->status;
-        $property_amenity->save();
-        Cache::forget('featured_property_amenities');
-        return 1;
-    }
 }

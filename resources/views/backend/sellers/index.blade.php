@@ -1,32 +1,28 @@
 @extends('backend.layouts.app')
-
 @section('css')
-<link rel="stylesheet" href="{{asset('/public/assets/backend/css/confirm.css')}}">
+ <link rel="stylesheet" href="{{asset('/public/assets/backend/css/confirm.css')}}">
 @endSection
-
 
 @section('content')
 
-<!--begin::Content-->
 <div class="d-flex flex-column flex-column-fluid" id="kt_content">
-    <div class="toolbar" id="kt_toolbar">
-        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-            <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
-                data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
-                class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ translate('All Agencies') }} </h1>
-                <span class="h-20px border-gray-300 border-start mx-4"></span>
-                <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
-                    <li class="breadcrumb-item text-muted">
-                        <a href="{{ route("admin.dashboard") }}" class="text-muted text-hover-primary"> {{ translate('Home')}}</a>
-                    </li>
-                    <li class="breadcrumb-item"><span class="bullet bg-gray-300 w-5px h-2px"></span></li>
-                    <li class="breadcrumb-item text-muted"> <a href="{{route('sellers.index')}}">{{ translate('agencies')}}</a></li>
-                </ul>
+    
+        <div class="toolbar" id="kt_toolbar">
+            <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+                <div class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ translate('All Agencies') }} </h1>
+                    <span class="h-20px border-gray-300 border-start mx-4"></span>
+                    <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
+                        <li class="breadcrumb-item text-muted">
+                            <a href="{{ route("admin.dashboard") }}" class="text-muted text-hover-primary"> {{ translate('Home')}}</a>
+                        </li>
+                        <li class="breadcrumb-item"><span class="bullet bg-gray-300 w-5px h-2px"></span></li>
+                        <li class="breadcrumb-item text-muted"> <a href="{{route('sellers.index')}}">{{ translate('agencies')}}</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <!--end::Toolbar-->
+        <!--end::Toolbar-->
     
 
     <!--begin::Post-->
@@ -72,7 +68,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2 align-self-end ">
-                                        <button type="submit" class="block btn btn-light-primary px-6 font-weight-bold">Search</button>
+                                        <button type="submit" class="block btn btn-primary px-6 font-weight-bold"> {{ translate('Search')}}</button>
                                     </div>
                                 </div>
                         </form>
@@ -98,12 +94,12 @@
                                     <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v"></i></button>
                                     <div class="dropdown-menu actions" aria-labelledby="dropdownMenuButton" style="">
-                                      <button data-action="delete" data-value="1" type="button" class="dropdown-item action_button "> Delete</button>
-                                      <button data-action="status" data-value="1" type="button" class="dropdown-item action_button ">Approved</button>
-                                      <button data-action="status" data-value="0" type="button" class="dropdown-item action_button ">UnApproved</button>
+                                      <button data-action="delete" data-value="1" type="button" class="dropdown-item action_button ">{{ translate('Delete') }}</button>
+                                      <button data-action="status" data-value="1" type="button" class="dropdown-item action_button ">{{ translate('Approved') }} </button>
+                                      <button data-action="status" data-value="0" type="button" class="dropdown-item action_button ">{{ translate('UnApproved') }} </button>
 
-                                      <button data-action="banned" data-value="1" type="button" class="dropdown-item action_button ">Banned</button>
-                                      <button data-action="banned" data-value="0" type="button" class="dropdown-item action_button ">UnBanned</button>
+                                      <button data-action="banned" data-value="1" type="button" class="dropdown-item action_button ">{{ translate('Banned') }} </button>
+                                      <button data-action="banned" data-value="0" type="button" class="dropdown-item action_button "> {{ translate('UnBanned') }} </button>
 
                                     </div>
                                 </div>
@@ -120,13 +116,12 @@
                                             </div> 
                                         </th>
                                         <th class="w-10px pe-2">#</th>
-                                        <th class="">{{ translate('Name') }}</th>
-                                        <th class="">{{ translate('Company Name')}}</th>
+                                        <th class="">{{ translate('Name')}}</th>
                                         <th class="">{{ translate('Type')}}</th>
                                         <th class="text-center min-w-75px">{{ translate('Approval') }}</th>
                                         <th class="text-center min-w-75px">{{ translate('Ban') }}</th>
-                                        <th class="text-center min-w-75px">{{ translate('Num. of Properties') }}</th>
-                                        <th class="text-center min-w-75px">{{ translate('Date') }}</th>
+                                        
+                                       
                                         <th width="10%">{{ translate('Action') }}</th>
                                     </tr>
                                 </thead>
@@ -139,15 +134,8 @@
                                                 </div></td>
                                                 <td>{{$key + 1}}</td>
                                                 <td class="text-center">
-                                                    <a href="return false;" data-toggle="modal" data-target="#profile{{$seller->id}}">
-                                                        {{ $seller->name}}
-                                                    </a>
-                                                </td>
-                                                <td class="text-center">
                                                     @if($seller->shop)
-                                                    <a href="return false;" data-toggle="modal" data-target="#agency{{$seller->shop->id}}">
-                                                        {{ $seller->shop->name}}
-                                                    </a>
+                                                    {{ $seller->shop->name}}
                                                     @else 
                                                     {{ translate('None') }}
                                                     @endif
@@ -163,19 +151,10 @@
                                                     </label>
                                                 </td>
                                                 <td class="text-center pe-0">
-                                            
-                                                    <label
-                                                        class="d-block form-check form-switch form-check-custom form-check-solid">
+                                                    <label class="d-block form-check form-switch form-check-custom form-check-solid">
                                                         <input disabled class="form-check-input" type="checkbox"
                                                             <?php if ( $seller->banned == 1){ echo 'checked';} ?> >
                                                     </label>
-                                                </td>
-                                                <td class="text-center pe-0">
-                                                    <span>{{count($seller->products)}}</span>
-                                                </td>
-
-                                                <td class="text-center pe-0">
-                                                    <span>{{$seller->created_at}}</span>
                                                 </td>
 
                                                 <td class="text-center">
@@ -184,22 +163,14 @@
                                                             data-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false">
                                                             <span class="svg-icon svg-icon-primary svg-icon-2x">
-                                                                 <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                                                                    height="24px" viewBox="0 0 24 24" version="1.1">
-                                                                    <g stroke="none" stroke-width="1" fill="none"
-                                                                        fill-rule="evenodd">
-                                                                        <rect x="0" y="0" width="24" height="24" />
-                                                                        <circle fill="#000000" cx="12" cy="5" r="2" />
-                                                                        <circle fill="#000000" cx="12" cy="12" r="2" />
-                                                                        <circle fill="#000000" cx="12" cy="19" r="2" />
-                                                                    </g>
-                                                                </svg>
-                                                                <!--end::Svg Icon-->
+                                                                 <i class="fas fa-ellipsis-v"></i>
                                                             </span>
                                                         </button>
                                                         <div class="dropdown-menu" style="overflow: auto;max-height: 100px">
+
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('sellers.show', $seller->id) }}">
+                                                                {{ translate('View')}}</a>
 
                                                             <a href="#" class="dropdown-item confirm-delete"
                                                                 data-href="{{ route('sellers.destroy', $seller->id) }}">
@@ -208,10 +179,6 @@
 
                                                         </div>
                                                     </div>
-                                                    @include('backend.sellers.profile_modal',['seller' => $seller])
-                                                    @if($seller->shop)
-                                                      @include('backend.sellers.shop_modal',['seller' => $seller])
-                                                    @endif
                                                 </td>
                                             </tr>
                                     @endforeach
@@ -227,9 +194,7 @@
     </div>
 </div>
 @endsection
-@section('modal')
-   @include('modals.delete_modal')
-@endsection
+
 
 @section('script')
     <script src="{{asset('/public/assets/backend/js/confirm.js')}}"></script>
@@ -274,7 +239,6 @@
                                     AIZ.plugins.notify('success','Record Deleted');
                                     location.reload();
                         });
-                     
                     },
                     Cancel: {
                         action: function () {
@@ -284,6 +248,38 @@
             });
 
         });
+
+
+         // onDelete
+         $(".render_data").delegate(".onDelete", "click", function(){
+
+            let id = $(this).attr("data-id"); 
+            $.confirm({
+                closeIcon: true, 
+                title: false,
+                content:'Are you sure to continue ?',
+                buttons: { 
+                        Ok:function(){
+                                $.get("{{route('sellers.bulk')}}",
+                                    { 
+                                        idz:id,
+                                        action:'delete',
+                                        value:0
+                                    }, function(data, status){                   
+                                        AIZ.plugins.notify('success','Record Deleted');
+                                        location.reload();
+                                });
+                        },
+                        Cancel: {
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+
+
+            });
 
         
 

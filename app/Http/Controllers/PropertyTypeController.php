@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\PropertyType;
 use App\Models\PropertyTypeTranslation;
 use Illuminate\Support\Str;
@@ -22,10 +23,9 @@ class PropertyTypeController extends Controller
             $sort_search = $request->search;
             $property_type = $property_type->where('name', 'like', '%'.$sort_search.'%');
         }
-        $property_type = $property_type->paginate(15);
-        // dd($property_type);
-        // die;
-        return view('backend.product.property_types.index', compact('property_type', 'sort_search'));
+        $property_types = $property_type->paginate(10);
+    
+        return view('backend.product.property_types.index', compact('property_types', 'sort_search'));
     }
 
     public function create()
@@ -39,35 +39,18 @@ class PropertyTypeController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_types,slug|max:255',
+        ]);
+
         $property_type = new PropertyType;
         $property_type->name = $request->name;
-        $property_type->order_level = 0;
-        if($request->order_level != null) {
-            $property_type->order_level = $request->order_level;
-        }
-        $property_type->banner = $request->banner;
-        $property_type->small_banner = $request->small_banner;
+        $property_type->slug = $request->slug;
+        $property_type->order_level = $request->order_level;
         $property_type->icon = $request->icon;
-        $property_type->meta_title = $request->meta_title;
         $property_type->meta_description = $request->meta_description;
-
-        if ($request->parent_id != "0") {
-            $property_type->parent_id = $request->parent_id;
-
-            $parent = PropertyType::find($request->parent_id);
-            $property_type->level = $parent->level + 1 ;
-        }
-
-        if ($request->slug != null) {
-            $property_type->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->slug));
-        }
-        else {
-            $property_type->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)).'-'.Str::random(5);
-        }
-        if ($request->commision_rate != null) {
-            $property_type->commision_rate = $request->commision_rate;
-        }
-
+        $property_type->parent_id = $request->parent_id;
         $property_type->save();
 
         $property_type_translation = PropertyTypeTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'property_type_id' => $property_type->id]);
@@ -75,81 +58,65 @@ class PropertyTypeController extends Controller
         $property_type_translation->save();
 
         flash(translate('Property Type has been inserted successfully'))->success();
-        return redirect()->route('product.property_type');
-    }
-
-    public function destroy($id)
-    {
-        $property_type = PropertyType::findOrFail($id);
-
-        $property_type->delete();
-
-        flash(translate('Property Type has been deleted successfully'))->success();
-        return redirect()->route('product.property_type');
+        return back();
     }
 
     public function edit(Request $request, $id){
 
         $lang = $request->lang;
-        $property_type = PropertyType::findOrFail($id);
+        $module = PropertyType::findOrFail($id);
         $property_types = PropertyType::where('parent_id', 0)
             ->with('childrenProperties')
             ->orderBy('name','asc')
             ->get();
 
-        return view('backend.product.property_types.edit', compact('lang', 'property_type', 'property_types'));
+        return view('backend.product.property_types.edit', compact('lang', 'property_types', 'module'));
     }
 
+
     public function update(Request $request, $id){
+
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|max:255|unique:property_types,slug,'.$id,
+        ]);
+
         $property_type = PropertyType::findOrFail($id);
+
         if($request->lang == env("DEFAULT_LANGUAGE")){
             $property_type->name = $request->name;
         }
-        if($request->order_level != null) {
-            $property_type->order_level = $request->order_level;
-        }
-        $property_type->banner = $request->banner;
-        $property_type->small_banner = $request->small_banner;
+        
+        $property_type->order_level = $request->order_level;
         $property_type->icon = $request->icon;
-        $property_type->meta_title = $request->meta_title;
         $property_type->meta_description = $request->meta_description;
-
-        $previous_level = $property_type->level;
-
-        if ($request->parent_id != "0") {
-            $property_type->parent_id = $request->parent_id;
-
-            $parent = PropertyType::find($request->parent_id);
-            $property_type->level = $parent->level + 1 ;
-        }
-        else{
-            $property_type->parent_id = 0;
-            $property_type->level = 0;
-        }
-        if ($request->slug != null) {
-            $property_type->slug = strtolower($request->slug);
-        }
-        else {
-            $property_type->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)).'-'.Str::random(5);
-        }
-
+        $property_type->parent_id = $request->parent_id;
         $property_type->save();
-
 
         $property_type_translation = PropertyTypeTranslation::firstOrNew(['lang' => $request->lang, 'property_type_id' => $property_type->id]);
         $property_type_translation->name = $request->name;
         $property_type_translation->save();
 
         flash(translate('Property Type has been updated successfully'))->success();
-        return redirect()->route('product.property_type');
+        return back();
+
     }
 
-    public function updateFeatured(Request $request)
+    public function destroy($id)
     {
-        $property_type = PropertyType::findOrFail($request->id);
-        $property_type->featured = $request->status;
-        $property_type->save();
-        Cache::forget('featured_product_types');
-        return 1;
+        $pp = Product::where('type_id',$id)->get();
+        if(count($pp) > 0){
+            flash(translate('Property Type Used SomeWhere'))->success();
+            return back();
+        }
+
+        $property_type = PropertyType::findOrFail($id);
+        $property_type->delete();
+
+        flash(translate('Property Type has been deleted successfully'))->success();
+        return back();
     }
+
+   
+
 }

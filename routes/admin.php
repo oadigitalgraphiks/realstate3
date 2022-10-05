@@ -27,10 +27,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::get('/categories/destroy/{id}', 'CategoryController@destroy')->name('categories.destroy');
     Route::post('/categories/featured', 'CategoryController@updateFeatured')->name('categories.featured');
 
+    // Brands
     Route::resource('brands', 'BrandController');
     Route::get('/brands/edit/{id}', 'BrandController@edit')->name('brands.edit');
     Route::get('/brands/destroy/{id}', 'BrandController@destroy')->name('brands.destroy');
 
+    // Products
     Route::get('/products/admin', 'ProductController@admin_products')->name('products.admin');
     Route::get('/products/seller', 'ProductController@seller_products')->name('products.seller');
     Route::get('/products/all', 'ProductController@all_products')->name('products.all');
@@ -43,9 +45,63 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::post('/products/get_products_by_subcategory', 'ProductController@get_products_by_subcategory')->name('products.get_products_by_subcategory');
     Route::post('/bulk-product-delete', 'ProductController@bulk_product_delete')->name('bulk-product-delete');
 
-    
+    // Property Types
+    Route::resource('property_type', 'PropertyTypeController');
+    Route::get("property_type/create/",'PropertyTypeController@create')->name('property_type.create');
+    Route::get("property_type/edit/{id}",'PropertyTypeController@edit')->name('property_type.edit');
+    Route::get('property_type/property/serach', 'PropertyTypeController@search')->name('property_type.search');
+    Route::post('property_type/property/property_list', 'PropertyTypeController@product_list')->name('property_type.type_list');
+    Route::get('property_types', 'PropertyTypeController@index')->name('product.property_type');
+    Route::get('property_type/destroy/{id}', 'PropertyTypeController@destroy')->name('property_type.destroy');
+    Route::post('/property_type/featured', 'PropertyTypeController@updateFeatured')->name('property_type.featured');
+
+    // Property Purposes
+    Route::resource('property_purposes', 'PropertyPurposeController');
+    Route::get("property_purposes/create/",'PropertyPurposeController@create')->name('property_purposes.create');
+    Route::get("property_purposes/edit/{id}",'PropertyPurposeController@edit')->name('property_purposes.edit');
+    Route::get('property_purposes/product/serach', 'PropertyPurposeController@search')->name('property_purposes.search');
+    Route::post('property_purposes/product/product_list', 'PropertyPurposeController@product_list')->name('property_purposes.type_list');
+    Route::get('property_purposes', 'PropertyPurposeController@index')->name('property_purposes.index');
+    Route::get('property_purposes/destroy/{id}', 'PropertyPurposeController@destroy')->name('property_purposes.destroy');
+    Route::post('/property_purposes/featured', 'PropertyPurposeController@updateFeatured')->name('property_purposes.featured');
+
+    // Propery Baths
+    Route::get('property_baths', 'PropertyBathController@index')->name('property_baths.index');
+    Route::get("property_baths/create/",'PropertyBathController@create')->name('property_baths.create');
+    Route::post("property_baths/store/",'PropertyBathController@store')->name('property_baths.store');
+    Route::get("property_baths/edit/{id}",'PropertyBathController@edit')->name('property_baths.edit');
+    Route::post("property_baths/update/{id}",'PropertyBathController@update')->name('property_baths.update');
+    Route::get('property_baths/destroy/{id}', 'PropertyBathController@destroy')->name('property_baths.destroy');
+     
+    // Property Beds
+    Route::get('property_beds', 'PropertyBedController@index')->name('property_beds.index');
+    Route::get("property_beds/create/",'PropertyBedController@create')->name('property_beds.create');
+    Route::post("property_beds/store/",'PropertyBedController@store')->name('property_beds.store');
+    Route::get("property_beds/edit/{id}",'PropertyBedController@edit')->name('property_beds.edit');
+    Route::post("property_beds/update/{id}",'PropertyBedController@update')->name('property_beds.update');
+    Route::get('property_beds/destroy/{id}', 'PropertyBedController@destroy')->name('property_beds.destroy');
+
+    // Property Amenities
+
+    Route::get('property_amenities', 'PropertyAmenityController@index')->name('property_amenities.index');
+    Route::get("property_amenities/create/",'PropertyAmenityController@create')->name('property_amenities.create');
+    Route::post("property_amenities/store/",'PropertyAmenityController@store')->name('property_amenities.store');
+    Route::get("property_amenities/edit/{id}",'PropertyAmenityController@edit')->name('property_amenities.edit');
+    Route::post("property_amenities/update/{id}",'PropertyAmenityController@update')->name('property_amenities.update');
+    Route::get('property_amenities/destroy/{id}', 'PropertyAmenityController@destroy')->name('property_amenities.destroy');
 
 
+    //Property Tour Types
+    Route::get('property_tour_types', 'PropertyTourTypeController@index')->name('property_tour_types.index');
+    Route::get("property_tour_types/create/",'PropertyTourTypeController@create')->name('property_tour_types.create');
+    Route::post("property_tour_types/store/",'PropertyTourTypeController@store')->name('property_tour_types.store');
+    Route::get("property_tour_types/edit/{id}",'PropertyTourTypeController@edit')->name('property_tour_types.edit');
+    Route::post("property_tour_types/update/{id}",'PropertyTourTypeController@update')->name('property_tour_types.update');
+    Route::get('property_tour_types/destroy/{id}', 'PropertyTourTypeController@destroy')->name('property_tour_types.destroy');
+
+
+  
+    // Sellers
     Route::get('sellers/bulk', 'SellerController@bulk')->name('sellers.bulk');
     Route::resource('sellers', 'SellerController');
     Route::get('sellers_ban/{id}', 'SellerController@ban')->name('sellers.ban');
@@ -59,8 +115,22 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::get('/seller/payments', 'PaymentController@payment_histories')->name('sellers.payment_histories');
     Route::get('/seller/payments/show/{id}', 'PaymentController@show')->name('sellers.payment_history');
 
+    // Property_inquiries
+    Route::get('property_inquiries/bulk', 'PropertyInquiryController@bulk')->name('property_inquiries.bulk');
     Route::resource('property_inquiries', 'PropertyInquiryController');
 
+    //Agency Signup    
+    Route::resource('agency_signup_options', 'AgencySignupOptionController')->only(['index','create','store','update']); 
+    Route::get("agency_signup_options/edit/{id}",'AgencySignupOptionController@edit')->name('agency_signup_options.edit');
+    Route::get('agency_signup_options/destroy/{id}', 'AgencySignupOptionController@destroy')->name('agency_signup_options.destroy');
+
+    // Property Spam Reports
+    Route::resource('property_reports', 'PropertyReportController');
+    Route::get("property_reports/edit/{id}",'PropertyReportController@edit')->name('property_reports.edit');
+    Route::get('property_reports/destroy/{id}', 'PropertyReportController@destroy')->name('property_reports.destroy');
+    
+
+    Route::get('customers/bulk', 'CustomerController@bulk')->name('customers.bulk');
     Route::resource('customers', 'CustomerController');
     Route::get('customers_ban/{customer}', 'CustomerController@ban')->name('customers.ban');
     Route::get('/customers/login/{id}', 'CustomerController@login')->name('customers.login');
@@ -323,6 +393,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::patch('/admin-menus/update/{id}', 'AdminMenuController@update')->name('admin_menu.update');
     Route::get('/admin-menus/destroy/{id}', 'AdminMenuController@destroy')->name('admin_menu.destroy');
     Route::post('/admin-menus/update-status', 'AdminMenuController@updateStatus')->name('admin_menu.update_status');
+   
     //permission
     Route::get('/permissions', 'PermissionController@index')->name('permission.index');
     Route::get('/permissions/create', 'PermissionController@create')->name('permission.create');

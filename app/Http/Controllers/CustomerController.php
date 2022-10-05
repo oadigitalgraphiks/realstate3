@@ -9,23 +9,24 @@ use App\Models\Order;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
+    /*
+     * Display a listing of the resource
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         $sort_search = null;
-        $users = User::where('user_type', 'customer')->where('email_verified_at', '!=', null)->orderBy('created_at', 'desc');
+        $users = User::where('user_type', 'customer')->orderBy('created_at', 'desc');
         if ($request->has('search')){
             $sort_search = $request->search;
             $users->where(function ($q) use ($sort_search){
                 $q->where('name', 'like', '%'.$sort_search.'%')->orWhere('email', 'like', '%'.$sort_search.'%');
             });
         }
-        $users = $users->paginate(15);
-        return view('backend.customer.customers.index', compact('users', 'sort_search'));
+
+        $users = $users->paginate(10);
+        return view('backend.customer.customers.index', compact('users'));
     }
 
     /**
@@ -89,7 +90,9 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        //
+
+        $data = User::find($id);
+        return view('backend.customer.customers.view',compact('data'));
     }
 
     /**
@@ -162,4 +165,39 @@ class CustomerController extends Controller
         
         return back();
     }
+
+
+
+    /*
+     * Remove the specified resource from storage.
+     */
+    public function bulk(Request $request)
+    {
+
+        if($request->has('idz') && $request->has('action') && $request->has('value')){
+            $idz = explode(',',$request->idz);    
+            switch ($request->action) {
+
+                case 'delete':
+                    User::whereIn('id',$idz)->delete();
+                    return response()->json(['message' => translate('Records Deleted')],200);
+                    break;
+  
+                case 'banned':
+
+                    $idz = explode(',',$request->idz);    
+                    $pp = User::whereIn('id',$idz)->update(['banned' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;    
+
+                default:
+                break;
+            }
+
+        }
+
+        return response()->json(['message' => translate('Error Found')],400);   
+    }
+
+
 }

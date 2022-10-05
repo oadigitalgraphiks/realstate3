@@ -9,132 +9,93 @@ use Illuminate\Support\Str;
 
 class PropertyBedController extends Controller
 {
-
-    /*
-     * Display a listing of the resource
+    /**
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-
         $sort_search =null;
-        $property_bed = PropertyBed::orderBy('id', 'desc');
-
-        if($request->has('search')){
+        $property_beds = PropertyBed::orderBy('id', 'desc');
+        if ($request->has('search')){
             $sort_search = $request->search;
-            $property_bed = $property_bed->where('name', 'like', '%'.$sort_search.'%');
+            $property_beds = $property_beds->where('name', 'like', '%'.$sort_search.'%');
         }
-
-        $property_bed = $property_bed->paginate(15);
-        return view('backend.product.property_beds.index', compact('property_bed', 'sort_search'));
+        $property_beds = $property_beds->paginate(10);
+        return view('backend.product.property_beds.index', compact('property_beds', 'sort_search'));
     }
-
 
     public function create()
     {
-        
-      return view('backend.product.property_beds.create');
+        return view('backend.product.property_beds.create');
     }
 
     public function store(Request $request)
     {
-
-        // dd($request->all());
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_beds,slug',
+        ]);
 
         $property_bed = new PropertyBed;
         $property_bed->name = $request->name;
-        $property_bed->order_level = 0;
-        if($request->order_level != null) {
-            $property_bed->order_level = $request->order_level;
-        }
-        $property_bed->banner = $request->banner;
-        $property_bed->small_banner = $request->small_banner;
-        $property_bed->icon = $request->icon;
-        $property_bed->meta_title = $request->meta_title;
-        $property_bed->meta_description = $request->meta_description;
-
-        if ($request->slug != null) {
-            $property_bed->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->slug));
-        }
-        else {
-            $property_bed->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)).'-'.Str::random(5);
-        }
-        if ($request->commision_rate != null) {
-            $property_bed->commision_rate = $request->commision_rate;
-        }
-
+        $property_bed->slug = $request->slug;
         $property_bed->save();
 
-        $property_bed_translation = PropertyBedTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'property_bed_id' => $property_bed->id]);
+        $property_bed_translation = PropertyBedTranslation::firstOrNew([
+            'lang' => env('DEFAULT_LANGUAGE'), 
+            'property_bed_id' => $property_bed->id
+        ]);
+
         $property_bed_translation->name = $request->name;
         $property_bed_translation->save();
 
         flash(translate('Property Bed has been inserted successfully'))->success();
-        return redirect()->route('product.property_bed');
+        return redirect()->route('property_beds.index');
     }
 
-    public function destroy($id)
-    {
-        $property_bed = PropertyBed::findOrFail($id);
-
-        $property_bed->delete();
-
-        flash(translate('Property Bed has been deleted successfully'))->success();
-        return redirect()->route('product.property_bed');
-    }
+   
 
     public function edit(Request $request, $id){
 
         $lang = $request->lang;
         $property_bed = PropertyBed::findOrFail($id);
-        $property_beds = PropertyBed::orderBy('name','asc')->get();
-
-        return view('backend.product.property_beds.edit', compact('lang', 'property_bed', 'property_beds'));
+        return view('backend.product.property_beds.edit', compact('lang', 'property_bed'));
     }
+
 
     public function update(Request $request, $id){
 
-        // dd($request->all());
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_beds,slug,'.$id,
+        ]);
 
-
-        $property_bed = PropertyBed::findOrFail($id);
+        $data = PropertyBed::findOrFail($id);
         if($request->lang == env("DEFAULT_LANGUAGE")){
-            $property_bed->name = $request->name;
+            $data->name = $request->name;
         }
+        $data->slug = $request->slug;
+        $data->save();
 
-        if($request->order_level != null) {
-            $property_bed->order_level = $request->order_level;
-        }
+        $translation = PropertyBedTranslation::firstOrNew(['lang' => $request->lang, 'property_bed_id' => $data->id]);
 
-        $property_bed->banner = $request->banner;
-        $property_bed->small_banner = $request->small_banner;
-        $property_bed->icon = $request->icon;
-        $property_bed->meta_title = $request->meta_title;
-        $property_bed->meta_description = $request->meta_description;
-
-        if ($request->slug != null) {
-            $property_bed->slug = strtolower($request->slug);
-        }
-        else {
-            $property_bed->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)).'-'.Str::random(5);
-        }
-
-        $property_bed->save();
-
-        $property_bed_translation = PropertyBedTranslation::firstOrNew(['lang' => $request->lang, 'property_bed_id' => $property_bed->id]);
-        $property_bed_translation->name = $request->name;
-        $property_bed_translation->save();
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
 
         flash(translate('Property Bed has been updated successfully'))->success();
-        return redirect()->route('product.property_bed');
+        return back();
     }
 
-    public function updateFeatured(Request $request)
+    
+
+    public function destroy($id)
     {
-        $property_type = PropertyBed::findOrFail($request->id);
-        $property_type->featured = $request->status;
-        $property_type->save();
-        Cache::forget('featured_product_beds');
-        return 1;
+        $data = PropertyBed::findOrFail($id);
+        $data->delete();
+
+        flash(translate('Property Bed Has Been Deleted Successfully'))->success();
+        return back();
+
     }
 }

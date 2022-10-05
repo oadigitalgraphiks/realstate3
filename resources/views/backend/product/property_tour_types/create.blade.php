@@ -1,283 +1,108 @@
 @extends('backend.layouts.app')
 @section('content')
-    <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Toolbar-->
+        
         <div class="toolbar" id="kt_toolbar">
-            <!--begin::Container-->
             <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-                <!--begin::Page title-->
                 <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
                     data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                    <!--begin::Title-->
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">
-                        {{ translate('Property Tour Type Information') }}</h1>
-
-                    <!--end::Title-->
-                    <!--begin::Separator-->
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1"> {{ translate('Add New') }}</h1>
                     <span class="h-20px border-gray-300 border-start mx-4"></span>
-                    <!--end::Separator-->
-                    <!--begin::Breadcrumb-->
                     <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-muted">
-                            <a href="#" class="text-muted text-hover-primary">Home</a>
+                            <a href="{{route('admin.dashboard')}}" class="text-muted  text-hover-primary">{{ translate('Home') }} </a>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Property</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted"> <a href="{{route('products.all')}}" class="text-muted text-hover-primary">{{ translate('Properties') }}</a></li>
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Property Tour Types</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item">
-                            <span class="bullet bg-gray-300 w-5px h-2px"></span>
-                        </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Add Property Tour Types</li>
-                        <!--end::Item-->
+                        <li class="breadcrumb-item text-muted"><a href="{{route('property_tour_types.index')}}" class="text-muted text-hover-primary">{{ translate('Property Tour Types') }}</a></li>
                     </ul>
-                    <!--end::Breadcrumb-->
                 </div>
-                <!--end::Page title-->
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Toolbar-->
-        <!--begin::Post-->
+
         <div class="post d-flex flex-column-fluid" id="kt_post">
-            <!--begin::Container-->
             <div id="kt_content_container" class="container-xxl">
-                <form class="form d-flex flex-column flex-lg-row gap-7 gap-lg-10" action="{{ route('property_tour_types.store') }}"
-                    method="POST" enctype="multipart/form-data">
+                <form class="form d-flex flex-column flex-lg-row gap-7 gap-lg-10" action="{{ route('property_tour_types.store') }}" method="POST" >
                     @csrf
 
-                    <!--begin::Main column-->
                     <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
-                        <!--begin::General options-->
                         <div class="card card-flush py-4">
-                            <!--begin::Card header-->
                             <div class="card-header">
                                 <div class="card-title">
                                     <h2>General</h2>
                                 </div>
                             </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
                             <div class="card-body pt-0">
-                                <!--begin::Input group-->
-                                <div class="mb-5 fv-row">
-                                    <label class="required form-label">{{ translate('Property Purpose') }}</label>
-                                    <input type="text" placeholder="{{ translate('Name') }}" id="name" name="name"
-                                        class="form-control mb-2" required>
-                                    <div class="text-muted fs-7">A Property Type name is required and recommended to be unique.
-                                    </div>
-
+                                
+                                <div class="py-2">
+                                    <label class="required form-label">{{ translate('Name') }}</label>
+                                    <input type="text" placeholder="{{ translate('Name') }}" name="name" class="title form-control mb-2" required>
+                                    @if($errors->has('name'))
+                                    <div class="error text-danger">{{ $errors->first('name') }}</div>
+                                    @endif
                                 </div>
-                            </div>
 
-                            <!--begin::Media-->
-                            <div class="card card-flush py-4">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h3>Media</h3>
-                                    </div>
+                                <div class="py-2">
+                                    <label class="required form-label">{{ translate('Slug') }}</label>
+                                    <input type="text" placeholder="{{ translate('slug') }}" name="slug" class="slug form-control mb-2" required>
+                                    @if($errors->has('slug'))
+                                    <div class="error text-danger">{{ $errors->first('slug') }}</div>
+                                    @endif
                                 </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body pt-0">
-                                    <!--begin::Input group-->
-                                    <div class="fv-row mb-2">
-                                        <label class="form-label">{{ translate('Icon') }} <b>(120 x 120)</b></label>
-                                        <!--begin::Dropzone-->
-                                        <div class="dropzone" id="kt_ecommerce_add_product_mediaa"
-                                            data-toggle="aizuploader" data-type="image">
-                                            <!--begin::Message-->
-                                            <div class="dz-message needsclick">
-                                                <!--begin::Icon-->
-                                                <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
-                                                <!--end::Icon-->
-                                                <!--begin::Info-->
-                                                <input type="hidden" name="icon" class="selected-files">
-                                                <div class="ms-4">
-                                                    <h3 class="fs-5 fw-bolder text-gray-900 mb-1">Drop files here or click
-                                                        to upload.</h3>
-                                                </div>
-                                                <!--end::Info-->
+
+                                <div class="py-2">
+                                    <label class="form-label">{{ translate('Image') }} <b>(120 x 120)</b></label>
+                                    <div class="dropzone" id="kt_ecommerce_add_product_mediaa"
+                                        data-toggle="aizuploader" data-type="image">
+                                        <div class="dz-message needsclick">
+                                            <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
+                                            <input type="hidden" name="logo" class="selected-files">
+                                            <div class="ms-4">
+                                                <h3 class="fs-5 fw-bolder text-gray-900 mb-1"> {{translate(' Drop files here or click to upload.')}}
+                                                </h3>
                                             </div>
                                         </div>
-                                        <!--end::Dropzone-->
-                                        <div class="file-preview box sm">
-                                        </div>
+                                    </div>
+                                    <div class="file-preview box sm"></div>
+                                </div>
 
-
-                                    </div>
-                                    <div class="text-muted fs-7">
-                                        {{ translate('These images are visible in Property Purpose Page Icon. Use 300 x 174 sizes images.') }}
-                                    </div>
-                                </div>
-                                <!--end::Card header-->
-                            </div>
-                            <!--end::Media-->
-                            <!--end::General options-->
-                            <!--begin::Meta options-->
-                            <div class="card card-flush py-4">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>{{ translate('Meta Options') }}</h2>
-                                    </div>
-                                </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body pt-0">
-                                    <!--begin::Input group-->
-                                    <div class="mb-10">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{{ translate('Meta Title') }}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="text" class="form-control mb-2" name="meta_title"
-                                            placeholder="{{ translate('Meta Title') }}" />
-                                        <!--end::Input-->
-                                        <!--begin::Description-->
-                                        <div class="text-muted fs-7">Set a meta tag title. Recommended to be simple and
-                                            precise keywords.</div>
-                                        <!--end::Description-->
-                                    </div>
-                                    <!--end::Input group-->
-                                    <!--begin::Input group-->
-                                    <div class="mb-10">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{{ translate('Meta Description') }}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Editor-->
-                                        <textarea name="meta_description" rows="5" class="form-control mb-2"></textarea>
-                                        <!--end::Editor-->
-                                        <!--begin::Description-->
-                                        <div class="text-muted fs-7">Set a meta tag description to the Property Type for
-                                            increased SEO ranking.</div>
-                                        <!--end::Description-->
-                                    </div>
-                                    <!--end::Input group-->
-
-                                </div>
-                                <!--end::Card header-->
-                            </div>
-                            <div class="d-flex justify-content-end">
-
-                                <button type="submit" id="kt_ecommerce_add_property_type_submit" class="btn btn-primary">
-                                    <span class="indicator-label">{{ translate('Save Changes') }}</span>
-                                    <span class="indicator-progress">Please wait...
-                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                </button>
-                                <!--end::Button-->
-                            </div>
-                        </div>
-                        <!--end::Main column-->
-                        <!--begin::Aside column-->
-                        <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px">
-
-                            <div class="card card-flush py-4">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>{{ translate('Ordering Number') }}</h2>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-0">
-                                    <input type="number" name="order_level" class="form-control mb-2" id="order_level"
-                                        placeholder="{{ translate('Order Level') }}">
-                                    <div class="text-muted fs-7">{{ translate('Higher number has high priority') }}</div>
-                                </div>
-                            </div>
-
-                            <div class="card card-flush py-4 d-none">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <!--begin::Card title-->
-                                    <div class="card-title">
-                                        <h2>{{ translate('Type') }}</h2>
-                                    </div>
-                                    <!--end::Card title-->
-                                </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body pt-0">
-                                    <!--begin::Select store template-->
-                                    <label for="kt_ecommerce_add_property_type_store_template"
-                                        class="form-label">{{ translate('Property Purpose') }}</label>
-                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                        data-placeholder="Select an option" id="kt_ecommerce_add_property_type_store_template"
-                                        name="digital">
-                                        <option value="0">{{ translate('Physical') }}</option>
-                                        <option value="1">{{ translate('Digital') }}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            @if (get_setting('property_type_wise_commission') == 1)
-                                <div class="card card-flush py-4">
-                                    <div class="card-header">
-                                        <div class="card-title">
-                                            <h2>{{ translate('Commission Rate') }}</h2>
-                                        </div>
-                                    </div>
-                                    <div class="card-body pt-0">
-                                        <input type="number" lang="en" min="0" step="0.01"
-                                            placeholder="{{ translate('Commission Rate') }}" id="commision_rate"
-                                            name="commision_rate" class="form-control">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                        {{-- <div class="text-muted fs-7">{{translate('Higher number has high priority')}}</div> --}}
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="card card-flush py-4 d-none">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h3>{{ translate('Filtering Attributes') }}</h3>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-0">
-                                    <label for="kt_ecommerce_add_product_store_template"
-                                        class="form-label">{{ translate('Filtering Attributes') }}</label>
-                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                        data-placeholder="Select an option" id="kt_ecommerce_add_product_store_template"
-                                        name="filtering_attributes[]">
-                                        @foreach (\App\Models\Attribute::all() as $attribute)
-                                            <option value="{{ $attribute->id }}">
-                                                {{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="mb-10 text-center ">
+                                    <button class="btn btn-primary" type="submit" > {{translate('Submit')}}
+                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <!--end::Aside column-->
-
                     </div>
                 </form>
-            <!--end::Container-->
+           </div>
         </div>
-        <!--end::Post-->
-    </div>
 
+    </div>
 @endsection
 @section('script')
     <script src="{{ static_asset('assets/backend/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
-    <script src="{{ static_asset('assets/backend/js/custom/apps/ecommerce/catalog/save-category.js') }}"></script>
+
+    <script>
+
+        $(".title").keyup(function(){
+           var Text = $(this).val();
+           Text = Text.toLowerCase();
+           Text = Text.replace(/[^a-zA-Z0-9]+/g,'-');
+           $(".slug").val(Text);        
+        });
+
+        $(".slug").keyup(function(){
+           var Text = $(this).val();
+           Text = Text.toLowerCase();
+           Text = Text.replace(/[^a-zA-Z0-9]+/g,'-');
+           $(".slug").val(Text);        
+        });
+
+    </script>
 @endsection

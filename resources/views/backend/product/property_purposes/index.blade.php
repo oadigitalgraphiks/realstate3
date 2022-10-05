@@ -4,65 +4,38 @@
 
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Toolbar-->
+
         <div class="toolbar" id="kt_toolbar">
-            <!--begin::Container-->
             <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-                <!--begin::Page title-->
                 <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
                     data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                    <!--begin::Title-->
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">Property Purposes</h1>
-                    <!--end::Title-->
-                    <!--begin::Separator-->
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1"> {{ translate('Property Purposses') }}</h1>
                     <span class="h-20px border-gray-300 border-start mx-4"></span>
-                    <!--end::Separator-->
-                    <!--begin::Breadcrumb-->
                     <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-muted">
-                            <a href="#" class="text-muted text-hover-primary">Home</a>
+                            <a href="{{route('admin.dashboard')}}" class="text-muted  text-hover-primary">{{ translate('Home') }} </a>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Property</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted"> <a href="{{route('products.all')}}" class="text-muted text-hover-primary">{{ translate('Properties') }}</a></li>
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Property Purposes</li>
-                        <!--end::Item-->
+                        <li class="breadcrumb-item text-muted"><a href="{{route('property_purposes.index')}}" class="text-muted text-hover-primary">{{ translate('Property Purposses') }}</a></li>
                     </ul>
-                    <!--end::Breadcrumb-->
                 </div>
-                <!--end::Page title-->
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Toolbar-->
-        <!--begin::Post-->
+      
         <div class="post d-flex flex-column-fluid" id="kt_post">
-            <!--begin::Container-->
             <div id="kt_content_container" class="container-xxl">
-                <!--begin::Products-->
-                <form class="" id="sort_property_type" action="" method="GET">
+                <form  method="GET">
                     <div class="card card-flush">
-                        <!--begin::Card header-->
                         <div class="card-header align-items-center py-5 gap-2 gap-md-5">
-                            <!--begin::Card title-->
                             <div class="card-title">
-                                <!--begin::Search-->
                                 <div class="d-flex align-items-center position-relative my-1">
-                                    <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
                                     <span class="svg-icon svg-icon-1 position-absolute ms-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                             fill="none">
@@ -73,213 +46,80 @@
                                                 fill="black" />
                                         </svg>
                                     </span>
-                                    <!--end::Svg Icon-->
                                     <input type="text" class="form-control form-control-solid w-250px ps-14" id="search"
                                         name="search" @isset($sort_search) value="{{ $sort_search }}"
                                         @endisset placeholder="{{ translate('Type & Enter') }}" />
                                 </div>
-                                <!--end::Search-->
-
                             </div>
-                            <!--end::Card title-->
-                            <!--begin::Card toolbar-->
+                         
                             <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                <span class="text-muted"> {{ translate('Displaying') }}  
+                                    {{ ($property_purposes->currentPage() > 1) ? (($property_purposes->currentPage()-1) * $property_purposes->perPage()) : ((count($property_purposes) > 0) ? 1 : 0) }} -
+                                        
+                                    {{ ($property_purposes->currentPage() > 1) ? (($property_purposes->currentPage()-1) * $property_purposes->perPage() + count($property_purposes)) : count($property_purposes)}} {{ translate('of') }} <span class="count_show"> {{$property_purposes->total()}} </span> 
+                                    {{ translate('Records') }}
+                                </span>
+
                                 <a href="{{ route('property_purposes.create') }}" class="btn btn-primary">
-                                    {{ translate('Add New Property Purposes') }}
+                                    {{ translate('Add New') }}
                                 </a>
-                                <!--end::Add product-->
                             </div>
-                            <!--end::Card toolbar-->
                         </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-
+                        
                         <div class="card-body pt-0">
-                            <!--begin::Table-->
                             <div class="table-responsive">
-                                <!--begin::Table-->
-                                <table class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3">
-                                    <!--begin::Table head-->
+                                <table class="table table-row-bordered align-middle gs-0 gy-3">
                                     <thead>
-                                        <!--begin::Table row-->
-                                        <tr class="text-center text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                            <th class="w-10px pe-2">
-                                                {{ translate('Sno.') }}
-                                            </th>
-                                            <th class="min-w-200px">{{ translate('Property Type') }}</th>
-                                            <th class="text-center min-w-75px">{{ translate('Parent Type') }}</th>
-                                            <th class="text-center min-w-175px">{{ translate('Order Level') }}</th>
-                                            <th class="text-center min-w-150px">{{ translate('Level') }}</th>
-                                            <th class="text-center min-w-100px">{{ translate('Banner') }}</th>
-                                            <th class="text-center min-w-100px">{{ translate('Icon') }}</th>
-                                            <th class="text-center min-w-70px">{{ translate('Featured') }}</th>
-                                            <th class="text-center min-w-150px">{{ translate('Actions') }}</th>
+                                        <tr class="text-center  fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="">{{ translate('ID') }}</th>
+                                            <th class="">{{ translate('Image') }}</th>
+                                            <th class="">{{ translate('Name') }}</th>
+                                            <th class="">{{ translate('Parent') }}</th>
+                                            <th class="">{{ translate('Actions') }}</th>
                                         </tr>
-                                        <!--end::Table row-->
                                     </thead>
-                                    <!--end::Table head-->
-                                    <!--begin::Table body-->
                                     <tbody class="fw-bold text-gray-600">
-                                        <!--begin::Table row-->
                                         @foreach ($property_purposes as $key => $property_purpose)
-                                            <tr>
-                                                <!--begin::Checkbox-->
-                                                <td class="text-center pe-0">
-                                                    <span
-                                                        class="fw-bolder">{{$property_purpose->id}}</span>
-                                                </td>
-                                                <!--begin::Category=-->
+                                            <tr class="text-center" >
+                                                <td class="text-center">{{$property_purpose->id}}</td>
                                                 <td>
-                                                    <div class="d-flex">
-                                                        <!--begin::Thumbnail-->
-                                                        <a href="{{ route('property_purposes.edit', ['id' => $property_purpose->id, 'lang' => env('DEFAULT_LANGUAGE')]) }}"
-                                                            class="symbol symbol-50px">
-                                                            @if ($property_purpose->icon != null)
-                                                                <span class="symbol-label"
-                                                                    style="background-image:url({{ uploaded_asset($property_purpose->icon) }});"></span>
-                                                            @else
-                                                                —
-                                                            @endif
-                                                        </a>
-                                                        <!--end::Thumbnail-->
-                                                        <div class="ms-5">
-                                                            <!--begin::Title-->
-                                                            <a href="{{ route('property_purposes.edit', ['id' => $property_purpose->id, 'lang' => env('DEFAULT_LANGUAGE')]) }}"
-                                                                class="text-gray-800 text-hover-primary fs-5 fw-bolder mb-1"
-                                                                data-kt-ecommerce-property_type-filter="property_type_name">
-                                                                <div class="badge badge-light-success">
-                                                                    {{ $property_purpose->getTranslation('name') }}</div>
-                                                            </a>
-                                                            <!--end::Title-->
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <!--end::Category=-->
-                                                <td class="text-center pe-0">
-                                                    <span class="fw-bolder">@php
-                                                        $parent = \App\Models\PropertyPurpose::where('id', $property_purpose->parent_id)->first();
-                                                    @endphp
-                                                        @if ($parent != null)
-                                                            {{ $parent->getTranslation('name') }}
-                                                        @else
-                                                            —
-                                                        @endif
-                                                    </span>
-                                                </td>
-                                                <!--end::SKU=-->
-                                                <!--begin::Qty=-->
-                                                <td class="text-center pe-0" data-order="32">
-                                                    <span class="fw-bolder ms-3">
-                                                        {{ $property_purpose->order_level }}
-                                                    </span>
-                                                </td>
-                                                <td class="text-center pe-0" data-order="32">
-                                                    <span class="fw-bolder ms-3">
-                                                        {{ $property_purpose->level }}
-                                                    </span>
-                                                </td>
-                                                <!--end::Qty=-->
-                                                <!--begin::Price=-->
-                                                <td class="text-center pe-0" data-order="2">
-                                                    <span>
-                                                        @if ($property_purpose->banner != null)
-                                                            <img src="{{ uploaded_asset($property_purpose->banner) }}"
-                                                                alt="{{ translate('Banner') }}" class="h-50px">
-                                                        @else
-                                                            —
-                                                        @endif
-                                                    </span>
-                                                </td>
-                                                <td class="text-center pe-0">
                                                     @if ($property_purpose->icon != null)
-                                                        <span class="avatar avatar-square avatar-xs width_75">
-                                                            <img src="{{ uploaded_asset($property_purpose->icon) }}"
-                                                                alt="{{ translate('icon') }}" style="width: 75px">
-                                                        </span>
-                                                    @else
-                                                        —
-                                                    @endif
+                                                    <span class="avatar avatar-square avatar-xs width_75">
+                                                        <img src="{{ uploaded_asset($property_purpose->icon) }}"
+                                                            alt="{{ translate('icon') }}" style="width: 75px">
+                                                    </span>
+                                                   @else
+                                                    —
+                                                   @endif
                                                 </td>
-                                                <!--end::Price=-->
-                                                <!--begin::Rating-->
-                                                <td class="text-center pe-0" data-order="rating-3">
-                                                    <label
-                                                        class="form-check form-switch form-check-custom form-check-solid">
-                                                        <input class="form-check-input" onchange="update_featured(this)"
-                                                            value="{{ $property_purpose->id }}" type="checkbox"
-                                                            <?php if ($property_purpose->featured == 1) {
-                                                                echo 'checked';
-                                                            } ?>>
-                                                    </label>
+                                                <td>{{ $property_purpose->getTranslation('name') }}</td>
+                                                <td class="text-center">
+                                                    {{ $property_purpose->parent ? $property_purpose->parent->getTranslation('name') : '-'}}
                                                 </td>
-                                                <!--end::Rating-->
-
                                                 <td class="text-center">
                                                     <a href="{{ route('property_purposes.edit', ['id' => $property_purpose->id, 'lang' => env('DEFAULT_LANGUAGE')]) }}"
-                                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                                                        <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-                                                        <span class="svg-icon svg-icon-3">
-                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                                                                height="24px" viewBox="0 0 24 24" version="1.1">
-                                                                <g stroke="none" stroke-width="1" fill="none"
-                                                                    fill-rule="evenodd">
-                                                                    <rect x="0" y="0" width="24" height="24" />
-                                                                    <path
-                                                                        d="M3,12 C3,12 5.45454545,6 12,6 C16.9090909,6 21,12 21,12 C21,12 16.9090909,18 12,18 C5.45454545,18 3,12 3,12 Z"
-                                                                        fill="#000000" fill-rule="nonzero" opacity="0.3" />
-                                                                    <path
-                                                                        d="M12,15 C10.3431458,15 9,13.6568542 9,12 C9,10.3431458 10.3431458,9 12,9 C13.6568542,9 15,10.3431458 15,12 C15,13.6568542 13.6568542,15 12,15 Z"
-                                                                        fill="#000000" opacity="0.3" />
-                                                                </g>
-                                                            </svg></span>
+                                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"><span class="svg-icon svg-icon-3"><i class="text-primary fas fa-marker" ></i></span>
                                                     </a>
 
-                                                    <a href="#"
-                                                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm confirm-delete"
-                                                        data-href="{{ route('property_purposes.destroy', $property_purpose->id) }}">
-                                                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                                                        <span class="svg-icon svg-icon-3">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                viewBox="0 0 24 24" fill="none">
-                                                                <path
-                                                                    d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z"
-                                                                    fill="black"></path>
-                                                                <path opacity="0.5"
-                                                                    d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z"
-                                                                    fill="black"></path>
-                                                                <path opacity="0.5"
-                                                                    d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z"
-                                                                    fill="black"></path>
-                                                            </svg>
-                                                        </span>
-                                                        <!--end::Svg Icon-->
+                                                    <a href="#" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm confirm-delete" data-href="{{ route('property_purposes.destroy', $property_purpose->id) }}">
+                                                    <span class="svg-icon svg-icon-3"><i class="text-danger far fa-trash-alt" ></i></span>
                                                     </a>
 
                                                 </td>
-
-                                                <!--end::Action=-->
                                             </tr>
                                         @endforeach
-                                        <!--end::Table row-->
                                     </tbody>
-                                    <!--end::Table body-->
                                 </table>
-                                <!--end::Table-->
                             </div>
-                            <!--end::Card body-->
                         </div>
                     </div>
+                    <div class="aiz-pagination pt-4">
+                        {{ $property_purposes->appends(request()->input())->links() }}
+                    </div>
                 </form>
-                <!--end::Products-->
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Post-->
     </div>
-    <!--end::Content-->
-
-
 @endsection
 
 
@@ -287,26 +127,6 @@
     @include('modals.delete_modal')
 @endsection
 
-
 @section('script')
-    <script type="text/javascript">
-        function update_featured(el) {
-            if (el.checked) {
-                var status = 1;
-            } else {
-                var status = 0;
-            }
-            $.post('{{ route('property_type.featured') }}', {
-                _token: '{{ csrf_token() }}',
-                id: el.value,
-                status: status
-            }, function(data) {
-                if (data == 1) {
-                    AIZ.plugins.notify('success', '{{ translate('Featured property_type updated successfully') }}');
-                } else {
-                    AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
-                }
-            });
-        }
-    </script>
+    
 @endsection
