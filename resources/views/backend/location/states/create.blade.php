@@ -20,7 +20,7 @@
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <li class="breadcrumb-item text-muted"><a class="text-muted" href="{{route('property_cities.index')}}" >{{translate('Cities')}}</a></li>
+                        <li class="breadcrumb-item text-muted"><a class="text-muted" href="{{route('property_states.index')}}" >{{translate('States')}}</a></li>
                     </ul>
                 </div>
             </div>
@@ -29,7 +29,7 @@
     
         <div class="post d-flex flex-column-fluid" id="kt_post">
             <div id="kt_content_container" class="container-xxl">
-                <form class="form d-flex flex-column flex-lg-row gap-7 gap-lg-10" action="{{ route('property_cities.store') }}" method="POST">
+                <form class="form d-flex flex-column flex-lg-row gap-7 gap-lg-10" action="{{ route('property_states.store') }}" method="POST">
                     @csrf
 
                     <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
@@ -71,8 +71,8 @@
                                 </div>
 
                                 <div class="py-2">
-                                    <label class="form-label">{{ translate('State') }}</label>
-                                    <select required class="form-select mb-2"  data-placeholder="Select an option" name="state_id" id="state_id">
+                                    <label class="form-label">{{ translate('Country') }}</label>
+                                    <select required class="form-select mb-2"  data-placeholder="Select an option" name="country_id" id="country_id">
                                     </select>
                                 </div>
 
@@ -125,9 +125,9 @@
     <script src="{{ static_asset('assets/backend/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
     <script>
 
-        $('#state_id').select2({
+        $('#country_id').select2({
         ajax: {
-            url: "{{route('property_states.index')}}",
+            url: "{{route('property_countries.index')}}",
             dataType: 'json',
             delay: 250,
             processResults: function (data) {

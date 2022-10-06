@@ -4,31 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PropertyCountry;
+use App\Models\PropertyCountryTranslation;
 use App;
+
+
 
 class CountryController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Display a listing of the resource
      */
     public function index(Request $request)
     {
-        $sort_country = $request->sort_country;
-        $country_queries = PropertyCountry::orderBy('status', 'desc');
-        if($request->sort_country) {
-            $country_queries->where('name', 'like', "%$sort_country%");
+        if($request->ajax()){
+            $search = $request->q;
+           $data = PropertyCountry::select("id","name")->where('name','LIKE',"%$search%")->get();
+           return response()->json($data,200);
         }
-        $countries = $country_queries->paginate(15);
 
-        return view('backend.location.countries.index', compact('countries', 'sort_country'));
+        $sort_country = $request->sort_country;
+        $data = PropertyCountry::orderBy('status', 'desc');
+        if($request->sort_country) {
+            $data = $data->where('name', 'like', "%$sort_country%");
+        }
+        $data = $data->paginate(15);
+        return view('backend.location.countries.index', compact('data', 'sort_country'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -38,62 +43,80 @@ class CountryController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $country = new PropertyCountry;
-        $country->name = $request->name;
-        $country->code = $request->code;
-        $country->status = 1;
-        $country->save();
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_countries,slug',
+        ]);
+
+        $data = new PropertyCountry;
+        $data->name = $request->name;
+        $data->slug = $request->slug;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->featured = $request->featured;
+        $data->status = $request->status;
+        $data->save();
+
+        $translation = PropertyCountryTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->save();
 
         flash(translate('Country has been inserted successfully'))->success();
         return redirect()->route('property_countries.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+   
+
+    public function edit(Request $request, $id){
+
+        $lang = env("DEFAULT_LANGUAGE");
+        if($request->has('lang')){
+          $lang = $request->lang;
+        }
+        
+        $data = PropertyCountry::findOrFail($id);
+        return view('backend.location.countries.edit', compact('lang', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $country = PropertyCountry::findOrFail($id);
-        return view('backend.location.countries.edit', compact('country'));
-
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $country = PropertyCountry::findOrFail($id);
-        $country->name = $request->name;
-        $country->code = $request->code;
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:property_countries,slug,'.$id,
+        ]);
 
-        $country->save();
+        $data = PropertyCountry::findOrFail($id);
+        if($request->lang == env("DEFAULT_LANGUAGE")){
+            $data->name = $request->name;
+        }
+
+        $data->slug = $request->slug;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->status = $request->status;
+        $data->featured = $request->featured;
+        $data->save();
+
+        $translation = PropertyCountryTranslation::firstOrNew(['lang' => $request->lang, 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
+
         flash(translate('Property Country has been Updated successfully'))->success();
-        return redirect()->route('property_countries.index');
+        return back();
+
     }
 
     /**
@@ -113,12 +136,34 @@ class CountryController extends Controller
         return redirect()->route('property_countries.index');
     }
 
-    public function updateStatus(Request $request){
-        $country = PropertyCountry::findOrFail($request->id);
-        $country->status = $request->status;
-        if($country->save()){
-            return 1;
+     /*
+     * Remove the specified resource from storage.
+     */
+    public function bulk(Request $request)
+    {
+
+        if($request->has('idz') && $request->has('action') && $request->has('value')){
+            $idz = explode(',',$request->idz);    
+            switch ($request->action) {
+            
+                case 'status': 
+                    PropertyCountry::whereIn('id',$idz)->update(['status' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;
+                
+                case 'featured':   
+                    PropertyCountry::whereIn('id',$idz)->update(['featured' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;    
+
+                default:
+                break;
+            }
+
         }
-        return 0;
+
+        return response()->json(['message' => translate('Error Found')],400);   
     }
+
+   
 }

@@ -1,123 +1,165 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use App\Models\PropertyNestedArea;
-use App\Models\PropertyArea;
+
 use App;
+use App\Models\PropertyNestedArea;
+use App\Models\PropertyNestedAreaTranslation;
 
 class NestedAreaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+
+    /*
+     * Display a listing of the resource
      */
     public function index(Request $request)
     {
-        $sort_area = $request->sort_area;
-        $area_queries = PropertyNestedArea::with('area.city.state.country');
-        if($request->sort_area) {
-            $area_queries->where('name', 'like', "%$sort_area%");
+        $sort = $request->sort;
+        $data = PropertyNestedArea::orderBy('status', 'desc');
+        if($request->sort) {
+            $data = $data->where('name', 'like', "%$sort%");
         }
-        $nested_areas = $area_queries->paginate(15);
+        $data = $data->paginate(15);
 
-        return view('backend.location.nested_areas.index', compact('nested_areas', 'sort_area'));
+        return view('backend.location.nested_areas.index', compact('data', 'sort'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $areas = PropertyArea::all();
-        return view('backend.location.nested_areas.create', compact('areas'));
+        return view('backend.location.nested_areas.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $nested_area = new PropertyNestedArea;
-        $nested_area->name = $request->name;
-        $nested_area->parent = $request->area_id;
-        $nested_area->save();
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_nested_areas,orignal_slug',
+        ]);
 
-        flash(translate('Country has been inserted successfully'))->success();
+        $data = new PropertyNestedArea;
+        $data->name = $request->name;
+        $data->orignal_slug = $request->orignal_slug;
+        $data->parent = $request->parent;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->featured = $request->featured;
+        $data->status = $request->status;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->save();
+
+        $translation = PropertyNestedAreaTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->save();
+
+        flash(translate('Nested Area has been inserted successfully'))->success();
         return redirect()->route('property_nested_areas.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+   
+    public function edit(Request $request, $id)
     {
-        //
+
+        $lang = env("DEFAULT_LANGUAGE");
+        if($request->has('lang')){
+          $lang = $request->lang;
+        }
+
+        $data = PropertyNestedArea::findOrFail($id);
+        return view('backend.location.nested_areas.edit', compact('lang', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $nested_area = PropertyNestedArea::find($id);
-        $areas = PropertyArea::all();
-        return view('backend.location.nested_areas.edit', compact('nested_area', 'areas'));
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $nested_area = PropertyNestedArea::findOrFail($id);
-        $nested_area->name = $request->name;
-        $nested_area->parent = $request->area_id;
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_nested_areas,orignal_slug,'.$id,
+        ]);
 
-        $nested_area->save();
-        flash(translate('Property Nested Area has been Updated successfully'))->success();
-        return redirect()->route('property_nested_areas.index');
+        $data = PropertyNestedArea::findOrFail($id);
+        if($request->lang == env("DEFAULT_LANGUAGE")){
+            $data->name = $request->name;
+        }
+
+        $data->orignal_slug = $request->orignal_slug;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->status = $request->status;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->featured = $request->featured;
+        $data->parent = $request->parent;
+        $data->save();
+
+        $translation = PropertyNestedAreaTranslation::firstOrNew([
+            'lang' => $request->lang, 
+            'ref' => $data->id
+        ]);
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
+
+        flash(translate('Property Nested Areas has been Updated successfully'))->success();
+        return back();
+
     }
+
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $property_nested_area = PropertyNestedArea::findOrFail($id);
-
-        $property_nested_area->delete();
+        
+        $data = PropertyNestedArea::findOrFail($id);
+        $data->delete();
 
         flash(translate('Property Nested Area has been deleted successfully'))->success();
-        return redirect()->route('property_nested_areas.index');
+        return back();
     }
 
-    public function updateStatus(Request $request){
-        $area = PropertyNestedArea::findOrFail($request->id);
-        $area->status = $request->status;
-        if($area->save()){
-            return 1;
+    
+     /*
+     * Remove the specified resource from storage.
+     */
+    public function bulk(Request $request)
+    {
+
+        if($request->has('idz') && $request->has('action') && $request->has('value')){
+            $idz = explode(',',$request->idz);    
+            switch ($request->action) {
+            
+                case 'status': 
+                    PropertyNestedArea::whereIn('id',$idz)->update(['status' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;
+                
+                case 'featured':   
+                    PropertyNestedArea::whereIn('id',$idz)->update(['featured' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;    
+
+                default:
+                break;
+            }
+
         }
-        return 0;
+
+        return response()->json(['message' => translate('Error Found')],400);   
     }
+
+   
 }

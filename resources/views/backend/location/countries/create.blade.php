@@ -1,126 +1,135 @@
 @extends('backend.layouts.app')
 @section('content')
-    <!--begin::Content-->
-    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Toolbar-->
-        <div class="toolbar" id="kt_toolbar">
-            <!--begin::Container-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+       <div class="toolbar" id="kt_toolbar">
             <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-                <!--begin::Page title-->
                 <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
                     data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
-                    <!--begin::Title-->
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">All Countries</h1>
-                    <!--end::Title-->
-                    <!--begin::Separator-->
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{translate('All Countries')}}</h1>
                     <span class="h-20px border-gray-300 border-start mx-4"></span>
-                    <!--end::Separator-->
-                    <!--begin::Breadcrumb-->
                     <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-muted">
-                            <a href="{{ route("admin.dashboard") }}" class="text-muted text-hover-primary">Home</a>
+                            <a href="{{ route("admin.dashboard")}}" class="text-muted text-hover-primary"> {{translate('Home')}}</a>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">eCommerce</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted"><a  >{{translate('Locations')}}</a></li>
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-300 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-muted">Setup & Configuration</li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item">
-                            <span class="bullet bg-gray-300 w-5px h-2px"></span>
-                        </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <li class="breadcrumb-item text-dark">Countries</li>
-                        <!--end::Item-->
+                        <li class="breadcrumb-item text-muted"><a href="{{route('property_countries.index')}}" >{{translate('Countries')}}</a></li>
                     </ul>
-                    <!--end::Breadcrumb-->
                 </div>
-                <!--end::Page title-->
             </div>
-            <!--end::Container-->
         </div>
-        <!--end::Toolbar-->
 
-
-
-        <!--begin::Post-->
+    
         <div class="post d-flex flex-column-fluid" id="kt_post">
             <div id="kt_content_container" class="container-xxl">
                 <form class="form d-flex flex-column flex-lg-row gap-7 gap-lg-10" action="{{ route('property_countries.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <!--begin::Main column-->
                     <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
-                        <!--begin::General options-->
                         <div class="card card-flush py-4">
-                            <!--begin::Card header-->
                             <div class="card-header">
-                                <div class="card-title">
-                                    <h2>General</h2>
-                                </div>
+                                <div class="card-title"><h2>General</h2></div>
                             </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
                             <div class="card-body pt-0">
-                                <!--begin::Input group-->
-                                <div class="mb-5 fv-row">
-                                    <label class="required form-label">{{ translate('Property Country') }}</label>
-                                    <input type="text" placeholder="{{ translate('Name') }}" id="name" name="name"
-                                        class="form-control mb-2" required>
-                                    <div class="text-muted fs-7">A Property Country name is required and recommended to be unique.
-                                    </div>
+                                
+                                <div class="py-2">
+                                    <label class="required form-label">{{ translate('Name') }}</label>
+                                    <input  placeholder="{{ translate('Name') }}" name="name" class="title form-control mb-2" required />
+                                    @if($errors->has('name'))
+                                    <div class="error text-danger">{{ $errors->first('name') }}</div>
+                                    @endif
                                 </div>
-                            </div>
+                                
+                                <div class="py-2">
+                                    <label class="required form-label">{{ translate('Slug') }}</label>
+                                    <input placeholder="{{ translate('Slug') }}" name="slug" class="slug form-control mb-2" required />
+                                    @if($errors->has('slug'))
+                                    <div class="error text-danger">{{ $errors->first('slug') }}</div>
+                                    @endif
+                                </div>
 
-                            <div class="card-body pt-0">
-                                <!--begin::Input group-->
-                                <div class="mb-5 fv-row">
+                                <div class="py-2">
+                                    <label class="form-label">{{ translate('Latitude') }}</label>
+                                    <input placeholder="{{ translate('Latitude') }}" name="lat" class="form-control mb-2" />
+                                </div>
+
+                                <div class="py-2">
+                                    <label class="form-label">{{ translate('Longitude') }}</label>
+                                    <input placeholder="{{ translate('Longitude') }}" name="lon" class="form-control mb-2" />
+                                </div>
+                                
+                                <div class="py-2">
                                     <label class="required form-label">{{ translate('Country Code') }}</label>
-                                    <input type="text" placeholder="{{ translate('Code') }}" id="code" name="code"
-                                        class="form-control mb-2" required>
-                                    <div class="text-muted fs-7">A Property Country Code is required and recommended to be unique.
-                                    </div>
+                                    <input placeholder="{{ translate('Code') }}" name="code" class="form-control mb-2" required />
                                 </div>
+
+                                <div class="py-2">
+                                    <label class="form-label">{{ translate('Status') }}</label>
+                                    <select required class="form-select mb-2" data-control="select2" data-placeholder="Select an option" name="status" id="published">
+                                          <option value="1"> {{ translate('Active') }}</option>
+                                          <option value="0"> {{ translate('Deactive') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="py-2">
+                                    <label class="form-label">{{ translate('Featured') }}</label>
+                                    <select required class="form-select mb-2" data-control="select2" data-placeholder="Select an option" name="featured" id="featured">
+                                          <option value="1"> {{ translate('Active') }}</option>
+                                          <option value="0"> {{ translate('Deactive') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="fv-row mb-2">
+                                    <label class="form-label">{{ translate('Icon') }} <b>(120 x 120)</b></label>
+                                    <div class="dropzone" id="kt_ecommerce_add_product_mediaa"
+                                        data-toggle="aizuploader" data-type="image">
+                                        <div class="dz-message needsclick">
+                                            <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
+                                            <input type="hidden" name="icon" class="selected-files">
+                                            <div class="ms-4">
+                                                <h3 class="fs-5 fw-bolder text-gray-900 mb-1"> {{translate(' Drop files here or click to upload.')}}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="file-preview box sm"></div>
+                                </div>
+
+                                <div class="py-2 text-center ">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+
                             </div>
 
-
-                            <div class="d-flex justify-content-end">
-                                <button type="submit" id="kt_ecommerce_add_property_type_submit" class="btn btn-primary">
-                                    <span class="indicator-label">{{ translate('Save Changes') }}</span>
-                                    <span class="indicator-progress">Please wait...
-                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                </button>
-                                <!--end::Button-->
-                            </div>
+                    
                         </div>
-
-
-                        <!--end::Main column-->
-
                     </div>
                 </form>
-            <!--end::Container-->
-        </div>
-        <!--end::Post-->
+          </div>
     </div>
-
 @endsection
 @section('script')
     <script src="{{ static_asset('assets/backend/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
-    <script src="{{ static_asset('assets/backend/js/custom/apps/ecommerce/catalog/save-category.js') }}"></script>
+    <script>
+         $(".title").keyup(function(){
+           var Text = $(this).val();
+           Text = Text.toLowerCase();
+           Text = Text.replace(/[^a-zA-Z0-9]+/g,'-');
+           $(".slug").val(Text);        
+        });
+
+        $(".slug").keyup(function(){
+           var Text = $(this).val();
+           Text = Text.toLowerCase();
+           Text = Text.replace(/[^a-zA-Z0-9]+/g,'-');
+           $(".slug").val(Text);        
+        });
+    </script>
 @endsection

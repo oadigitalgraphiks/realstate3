@@ -232,7 +232,7 @@
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">{{ translate('Country') }}</label>
-                                                    <select  class="form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="country_id" id="country_id">
+                                                    <select  class="country_change form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="country_id" id="country_id">
                                                             @foreach ($countries as $country)
                                                                 <option value="{{ $country->id }}" @if ($product && $product->country_id == $country->id) selected @endif>-- {{ $country->name }}</option>
                                                             @endforeach
@@ -241,7 +241,7 @@
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">{{ translate('State') }}</label>
-                                                    <select  class="form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="state_id" id="state_id">
+                                                    <select class="state_change form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="state_id" id="state_id">
                                                             @foreach ($states as $state)
                                                                 <option value="{{ $state->id }}" @if ($product && $product->state_id == $state->id) selected @endif>-- {{ $state->name }}</option>
                                                             @endforeach
@@ -250,7 +250,7 @@
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">{{ translate('City') }}</label>
-                                                    <select  class="form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="city_id" id="city_id">
+                                                    <select class="city_change form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="city_id" id="city_id">
                                                             @foreach ($cities as $city)
                                                                 <option value="{{ $city->id }}" @if ($product && $product->city_id == $city->id) selected @endif>-- {{ $city->name }}</option>
                                                             @endforeach
@@ -259,7 +259,7 @@
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">{{ translate('Area') }}</label>
-                                                    <select  class="form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="area_id" id="area_id">
+                                                    <select  class="area_change form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="area_id" id="area_id">
                                                             @foreach ($areas as $area)
                                                                 <option value="{{ $area->id }}" @if ($product && $product->area_id == $area->id) selected @endif>-- {{ $area->name }}</option>
                                                             @endforeach
@@ -268,7 +268,7 @@
 
                                                 <div class="col-md-6">
                                                     <label class="form-label">{{ translate('Nested Area') }}</label>
-                                                    <select  class="form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="nested_area_id" id="nested_area_id">
+                                                    <select  class="nested_area_change form-select mb-2" data-control="select2" data-placeholder="Select an option"  name="nested_area_id" id="nested_area_id">
                                                             @foreach ($nested_areas as $nested_area)
                                                                 <option value="{{ $nested_area->id }}" @if ($product && $product->nested_area_id == $nested_area->id) selected @endif>-- {{ $nested_area->name }}</option>
                                                             @endforeach
@@ -642,9 +642,6 @@
                                     <!--end::PDF-->
 
 
-                                   
-
-
                                     <!--begin:: External Link -->
                                     <div class="card card-flush my-2">
                                         <div data-toggle="collapse" href="#collapseexternal" role="button" aria-expanded="false" aria-controls="collapseExample" class="border-bottom card-header justify-space-between align-items-center">
@@ -701,7 +698,65 @@
     <script src="{{ static_asset('assets/backend/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
     <script type="text/javascript">
 
-        $(document).ready(function() {
+    $(document).ready(function() {
+
+
+        $(".country_change").change(function(){
+
+            let id = $(this).val();
+            $.ajax({
+                method: "POST",
+                url: "response.php",
+                data: {
+                    id: countryid
+                },
+                datatype: "html",
+                success: function(data) {
+               
+                    // $("#state").html(data);
+                    // $("#city").html('<option value="">Select city</option');
+
+                }
+            });
+
+            // alert(id);
+        
+          
+        });
+
+        $("#state").change(function(){
+            
+            console.log('state');
+          
+        });
+
+        $("#city").change(function(){
+            
+            console.log('country');
+          
+        });
+
+        $("#area").change(function(){
+            
+            console.log('country');
+          
+        });
+
+        $("#nestedarea").change(function(){
+            
+            console.log('country');
+          
+        });
+
+
+
+
+
+
+
+
+
+
 
                 $(".title").keyup(function(){
                     var Text = $(this).val();

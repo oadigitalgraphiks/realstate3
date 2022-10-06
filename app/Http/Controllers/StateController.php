@@ -1,108 +1,125 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
+
+use App;
 use App\Models\PropertyState;
-use App\Models\PropertyCountry;
-use App\Models\Country;
+use App\Models\PropertyStateTranslation;
 
 class StateController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Display a listing of the resource
      */
     public function index(Request $request)
     {
-        $sort_country = $request->sort_country;
-        $sort_state = $request->sort_state;
 
-        $state_queries = PropertyState::query();
-        if ($request->sort_state) {
-            $state_queries->where('name', 'like', "%$sort_state%");
-        }
-        if ($request->sort_country) {
-            $state_queries->where('country_id', $request->sort_country);
+        if($request->ajax()){
+           $search = $request->q;
+           $data = PropertyState::select("id","name")->where('name','LIKE',"%$search%")->limit(5)->get();
+           return response()->json($data,200);
         }
 
-        $states = $state_queries->orderBy('id', 'desc')->paginate(15);
-        return view('backend.location.states.index', compact('states', 'sort_country', 'sort_state'));
+        $sort = $request->sort;
+        $data = PropertyState::orderBy('status', 'desc');
+        if($request->sort) {
+            $data = $data->where('name', 'like', "%$sort%");
+        }
+        $data = $data->paginate(15);
+
+        return view('backend.location.states.index', compact('data', 'sort'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('backend.location.states.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $state = new PropertyState;
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_states,orignal_slug',
+        ]);
 
-        $state->name        = $request->name;
-        $state->country_id  = $request->country_id;
+        $data = new PropertyState;
+        $data->name = $request->name;
+        $data->orignal_slug = $request->orignal_slug;
+        $data->country_id = $request->country_id;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->featured = $request->featured;
+        $data->status = $request->status;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->save();
 
-        $state->save();
+        $translation = PropertyStateTranslation::firstOrNew([
+            'lang' => env('DEFAULT_LANGUAGE'), 
+            'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->save();
 
         flash(translate('State has been inserted successfully'))->success();
-        return back();
+        return redirect()->route('property_states.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+   
+
+    public function edit(Request $request, $id){
+
+        $lang = env("DEFAULT_LANGUAGE");
+        if($request->has('lang')){
+          $lang = $request->lang;
+        }
+
+        $data = PropertyState::findOrFail($id);
+        return view('backend.location.states.edit', compact('lang', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $state  = PropertyState::findOrFail($id);
-        $countries = PropertyCountry::where('status', 1)->get();
-
-        return view('backend.location.states.edit', compact('countries', 'state'));
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $state = PropertyState::findOrFail($id);
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_states,orignal_slug,'.$id,
+        ]);
 
-        $state->name        = $request->name;
-        $state->country_id  = $request->country_id;
+        $data = PropertyState::findOrFail($id);
+        if($request->lang == env("DEFAULT_LANGUAGE")){
+            $data->name = $request->name;
+        }
 
-        $state->save();
+        $data->orignal_slug = $request->orignal_slug;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->status = $request->status;
+        $data->featured = $request->featured;
+        $data->country_id = $request->country_id;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->save();
 
-        flash(translate('State has been updated successfully'))->success();
-        return redirect()->route('property_states.index');
+        $translation = PropertyStateTranslation::firstOrNew(['lang' => $request->lang, 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
+
+        flash(translate('Property State has been Updated successfully'))->success();
+        return back();
+
     }
 
     /**
@@ -113,25 +130,42 @@ class StateController extends Controller
      */
     public function destroy($id)
     {
-        PropertyState::destroy($id);
+        
+        $state = PropertyState::findOrFail($id);
+        $state->delete();
 
-        flash(translate('State has been deleted successfully'))->success();
-        return redirect()->route('states.index');
+        flash(translate('Property State has been deleted successfully'))->success();
+        return redirect()->route('property_states.index');
     }
 
-    public function updateStatus(Request $request)
+     /*
+     * Remove the specified resource from storage.
+     */
+    public function bulk(Request $request)
     {
-        $state = PropertyState::findOrFail($request->id);
-        $state->status = $request->status;
-        $state->save();
 
-        if ($state->status) {
-            foreach ($state->cities as $city) {
-                $city->status = 1;
-                $city->save();
+        if($request->has('idz') && $request->has('action') && $request->has('value')){
+            $idz = explode(',',$request->idz);    
+            switch ($request->action) {
+            
+                case 'status': 
+                    PropertyState::whereIn('id',$idz)->update(['status' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;
+                
+                case 'featured':   
+                    PropertyState::whereIn('id',$idz)->update(['featured' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;    
+
+                default:
+                break;
             }
+
         }
 
-        return 1;
+        return response()->json(['message' => translate('Error Found')],400);   
     }
+
+   
 }

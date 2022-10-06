@@ -1,124 +1,170 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use App\Models\PropertyArea;
-use App\Models\PropertyCity;
-use App\Models\PropertyCountry;
+
 use App;
+use App\Models\PropertyArea;
+use App\Models\PropertyAreaTranslation;
+
 
 class AreaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+
+    /*
+     * Display a listing of the resource
      */
     public function index(Request $request)
     {
-        $sort_area = $request->sort_area;
-        $area_queries = PropertyArea::with('city.state.country');
-        if($request->sort_area) {
-            $area_queries->where('name', 'like', "%$sort_area%");
-        }
-        $areas = $area_queries->paginate(15);
 
-        return view('backend.location.areas.index', compact('areas', 'sort_area'));
+        if($request->ajax()){
+            $search = $request->q;
+            $data = PropertyArea::select("id","name")->where('name','LIKE',"%$search%")->limit(5)->get();
+            return response()->json($data,200);
+         }
+
+        $sort = $request->sort;
+        $data = PropertyArea::orderBy('status', 'desc');
+        if($request->sort) {
+            $data = $data->where('name', 'like', "%$sort%");
+        }
+        $data = $data->paginate(15);
+
+        return view('backend.location.areas.index', compact('data', 'sort'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $cities = PropertyCity::all();
-        return view('backend.location.areas.create', compact('cities'));
+        return view('backend.location.areas.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $area = new PropertyArea;
-        $area->name = $request->name;
-        $area->city_id = $request->city_id;
-        $area->save();
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_areas,orignal_slug',
+        ]);
 
-        flash(translate('Country has been inserted successfully'))->success();
+        $data = new PropertyArea;
+        $data->name = $request->name;
+        $data->orignal_slug = $request->orignal_slug;
+        $data->city_id = $request->city_id;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->featured = $request->featured;
+        $data->status = $request->status;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->save();
+
+        $translation = PropertyAreaTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->save();
+
+        flash(translate('Area has been inserted successfully'))->success();
         return redirect()->route('property_areas.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+   
+
+    public function edit(Request $request, $id){
+
+        $lang = env("DEFAULT_LANGUAGE");
+        if($request->has('lang')){
+          $lang = $request->lang;
+        }
+
+        $data = PropertyArea::findOrFail($id);
+        return view('backend.location.areas.edit', compact('lang', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $area = PropertyArea::find($id);
-        $cities = PropertyCity::all();
-        return view('backend.location.areas.edit', compact('area', 'cities'));
-    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $area = PropertyArea::findOrFail($id);
-        $area->name = $request->name;
-        $area->city_id = $request->city_id;
+        $request->validate([
+            'name' => 'required',
+            'orignal_slug' => 'required|unique:property_areas,orignal_slug,'.$id,
+        ]);
 
-        $area->save();
+        $data = PropertyArea::findOrFail($id);
+        if($request->lang == env("DEFAULT_LANGUAGE")){
+            $data->name = $request->name;
+        }
+
+        $data->orignal_slug = $request->orignal_slug;
+        $data->code = $request->code;
+        $data->icon = $request->icon;
+        $data->status = $request->status;
+        $data->lat = $request->lat;
+        $data->lon = $request->lon;
+        $data->featured = $request->featured;
+        $data->city_id = $request->city_id;
+        $data->save();
+
+        $translation = PropertyAreaTranslation::firstOrNew(['lang' => $request->lang, 'ref' => $data->id]);
+        $translation->name = $request->name;
+        $translation->lang = $request->lang; 
+        $translation->save();
+
         flash(translate('Property Area has been Updated successfully'))->success();
-        return redirect()->route('property_areas.index');
+        return back();
+
     }
+
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $property_area = PropertyArea::findOrFail($id);
-
-        $property_area->delete();
+        
+        $data = PropertyArea::findOrFail($id);
+        $data->delete();
 
         flash(translate('Property Area has been deleted successfully'))->success();
-        return redirect()->route('property_areas.index');
+        return back();
     }
 
-    public function updateStatus(Request $request){
-        $area = PropertyArea::findOrFail($request->id);
-        $area->status = $request->status;
-        if($area->save()){
-            return 1;
+    
+     /*
+     * Remove the specified resource from storage.
+     */
+    public function bulk(Request $request)
+    {
+
+        if($request->has('idz') && $request->has('action') && $request->has('value')){
+            $idz = explode(',',$request->idz);    
+            switch ($request->action) {
+            
+                case 'status': 
+                    PropertyArea::whereIn('id',$idz)->update(['status' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;
+                
+                case 'featured':   
+                    PropertyArea::whereIn('id',$idz)->update(['featured' => $request->value]);
+                    return response()->json(['message' => translate('Updated')],200);
+                    break;    
+
+                default:
+                break;
+            }
+
         }
-        return 0;
+
+        return response()->json(['message' => translate('Error Found')],400);   
     }
+
+   
 }

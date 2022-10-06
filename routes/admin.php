@@ -90,7 +90,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::post("property_amenities/update/{id}",'PropertyAmenityController@update')->name('property_amenities.update');
     Route::get('property_amenities/destroy/{id}', 'PropertyAmenityController@destroy')->name('property_amenities.destroy');
 
-
     //Property Tour Types
     Route::get('property_tour_types', 'PropertyTourTypeController@index')->name('property_tour_types.index');
     Route::get("property_tour_types/create/",'PropertyTourTypeController@create')->name('property_tour_types.create');
@@ -99,6 +98,53 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::post("property_tour_types/update/{id}",'PropertyTourTypeController@update')->name('property_tour_types.update');
     Route::get('property_tour_types/destroy/{id}', 'PropertyTourTypeController@destroy')->name('property_tour_types.destroy');
 
+
+    // Property Countries
+    Route::get('/property_countries_bulk', 'CountryController@bulk')->name('property_countries.bulk');
+    Route::get('/property_countries', 'CountryController@index')->name('property_countries.index');
+    Route::get('/property_countries/create', 'CountryController@create')->name('property_countries.create');
+    Route::post('/property_countries/store', 'CountryController@store')->name('property_countries.store');
+    Route::get('/property_countries/edit/{id}', 'CountryController@edit')->name('property_countries.edit');
+    Route::post('/property_countries/update/{id}', 'CountryController@update')->name('property_countries.update');
+    Route::get('/property_countries/destroy/{id}', 'CountryController@destroy')->name('property_countries.destroy');
+
+    // Property States
+    // Route::get('/property_states_find', 'StateController@state_find')->name('property_states_find');
+    Route::get('/property_states_bulk', 'StateController@bulk')->name('property_states.bulk');
+    Route::get('/property_states', 'StateController@index')->name('property_states.index');
+    Route::get('/property_states/create', 'StateController@create')->name('property_states.create');
+    Route::post('/property_states/store', 'StateController@store')->name('property_states.store');
+    Route::get('/property_states/edit/{id}', 'StateController@edit')->name('property_states.edit');
+    Route::post('/property_states/update/{id}', 'StateController@update')->name('property_states.update');
+    Route::get('/property_states/destroy/{id}', 'StateController@destroy')->name('property_states.destroy');
+
+    // Property Cites
+    Route::get('/property_cities/bulk', 'CityController@bulk')->name('property_cities.bulk');
+    Route::get('/property_cities', 'CityController@index')->name('property_cities.index');
+    Route::get('/property_cities/create', 'CityController@create')->name('property_cities.create');
+    Route::post('/property_cities/store', 'CityController@store')->name('property_cities.store');
+    Route::get('/property_cities/edit/{id}', 'CityController@edit')->name('property_cities.edit');
+    Route::post('/property_cities/update/{id}', 'CityController@update')->name('property_cities.update');
+    Route::get('/property_cities/destroy/{id}', 'CityController@destroy')->name('property_cities.destroy');
+
+    // Property Areas
+    Route::get('/property_areas/bulk', 'AreaController@bulk')->name('property_areas.bulk');
+    Route::get('/property_areas', 'AreaController@index')->name('property_areas.index');
+    Route::get('/property_areas/create', 'AreaController@create')->name('property_areas.create');
+    Route::post('/property_areas/store', 'AreaController@store')->name('property_areas.store');
+    Route::get('/property_areas/edit/{id}', 'AreaController@edit')->name('property_areas.edit');
+    Route::post('/property_areas/update/{id}', 'AreaController@update')->name('property_areas.update');
+    Route::get('/property_areas/destroy/{id}', 'AreaController@destroy')->name('property_areas.destroy');
+
+      // Property Nested Areas
+      Route::get('/property_nested_areas/bulk', 'NestedAreaController@bulk')->name('property_nested_areas.bulk');
+      Route::get('/property_nested_areas', 'NestedAreaController@index')->name('property_nested_areas.index');
+      Route::get('/property_nested_areas/create', 'NestedAreaController@create')->name('property_nested_areas.create');
+      Route::post('/property_nested_areas/store', 'NestedAreaController@store')->name('property_nested_areas.store');
+      Route::get('/property_nested_areas/edit/{id}', 'NestedAreaController@edit')->name('property_nested_areas.edit');
+      Route::post('/property_nested_areas/update/{id}', 'NestedAreaController@update')->name('property_nested_areas.update');
+      Route::get('/property_nested_areas/destroy/{id}', 'NestedAreaController@destroy')->name('property_nested_areas.destroy');
+    
 
   
     // Sellers
